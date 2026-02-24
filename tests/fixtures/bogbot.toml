@@ -1,0 +1,12 @@
+[bogbot]
+version = "0.1.0"
+
+[agents]
+auth-agent = { description = "Owns authentication subsystem" }
+db-agent = { description = "Owns database layer" }
+
+[tree_sitter]
+language = "rust"
+
+[health]
+dimensions = ["test_coverage", "staleness", "complexity"]

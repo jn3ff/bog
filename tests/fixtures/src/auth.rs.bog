@@ -1,0 +1,31 @@
+#[file(
+  owner = "auth-agent",
+  subsystem = "authentication",
+  updated = "2026-02-18",
+  status = green
+)]
+
+#[description {
+  Authentication module.
+}]
+
+#[health(
+  test_coverage = green,
+  staleness = green,
+  complexity = green
+)]
+
+#[fn(login) {
+  status = green,
+  deps = [db::get_user],
+  contract = {
+    in = [(username, String), (password, String)],
+    out = "Result<String, String>"
+  },
+  description = "Authenticates user"
+}]
+
+#[fn(logout) {
+  status = green,
+  description = "Logs out user"
+}]

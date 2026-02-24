@@ -1,0 +1,63 @@
+// Bogbot .bog file grammar
+
+WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
+COMMENT    = _{ "//" ~ (!"\n" ~ ANY)* }
+
+bog_file = { SOI ~ annotation* ~ EOI }
+
+annotation = { "#[" ~ ident ~ parens? ~ body? ~ "]" }
+
+parens         = { "(" ~ parens_content ~ ")" }
+parens_content = { kv_list | ident }
+
+body         = { "{" ~ body_content? ~ "}" }
+body_content = { annotation+ | kv_list | freeform_text }
+
+kv_list = { kv_pair ~ ("," ~ kv_pair)* ~ ","? }
+kv_pair = { ident ~ "=" ~ value }
+
+value = {
+    string_literal
+  | fn_ref
+  | bool_literal
+  | status_literal
+  | number_literal
+  | ident_path
+  | ident
+  | list
+  | tuple
+  | nested_block
+}
+
+string_literal = @{ "\"" ~ string_inner ~ "\"" }
+string_inner   = @{ (!("\"") ~ ("\\\\" | "\\\"" | ANY))* }
+
+fn_ref     = { fn_keyword ~ "(" ~ ident ~ ")" }
+fn_keyword = @{ "fn" ~ !ident_char }
+
+status_literal = @{ ("green" | "yellow" | "red") ~ !ident_char }
+bool_literal   = @{ ("true" | "false") ~ !ident_char }
+number_literal = @{ ASCII_DIGIT+ ~ !ident_char }
+
+ident_char = _{ ASCII_ALPHANUMERIC | "_" | "-" }
+ident      = @{ (ASCII_ALPHA | "_") ~ ident_char* }
+ident_path = @{ (ASCII_ALPHA | "_") ~ ident_char* ~ ("::" ~ (ASCII_ALPHA | "_") ~ ident_char*)+ }
+
+list      = { "[" ~ (list_item ~ ("," ~ list_item)* ~ ","?)? ~ "]" }
+list_item = {
+    string_literal
+  | fn_ref
+  | bool_literal
+  | status_literal
+  | number_literal
+  | tuple
+  | ident_path
+  | ident
+}
+
+tuple      = { "(" ~ tuple_item ~ ("," ~ tuple_item)+ ~ ")" }
+tuple_item = { string_literal | ident }
+
+nested_block = { "{" ~ kv_list ~ "}" }
+
+freeform_text = @{ (!"}" ~ ANY)+ }
