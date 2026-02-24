@@ -1,5 +1,5 @@
 #[repo(
-  name = "bogbot",
+  name = "bog",
   version = "0.1.0",
   updated = "2026-02-24"
 )]

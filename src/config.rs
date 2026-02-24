@@ -4,8 +4,8 @@ use std::path::Path;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
-pub struct BogbotConfig {
-    pub bogbot: BogbotMeta,
+pub struct BogConfig {
+    pub bog: BogMeta,
     #[serde(default)]
     pub agents: HashMap<String, AgentConfig>,
     #[serde(default)]
@@ -15,7 +15,7 @@ pub struct BogbotConfig {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct BogbotMeta {
+pub struct BogMeta {
     pub version: String,
 }
 
@@ -50,9 +50,9 @@ pub struct HealthConfig {
     pub dimensions: Vec<String>,
 }
 
-pub fn load_config(path: &Path) -> Result<BogbotConfig, ConfigError> {
+pub fn load_config(path: &Path) -> Result<BogConfig, ConfigError> {
     let content = std::fs::read_to_string(path)?;
-    let config: BogbotConfig = toml::from_str(&content)?;
+    let config: BogConfig = toml::from_str(&content)?;
     Ok(config)
 }
 

@@ -1,4 +1,4 @@
-// Bogbot .bog file grammar
+// Bog .bog file grammar
 
 WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
 COMMENT    = _{ "//" ~ (!"\n" ~ ANY)* }

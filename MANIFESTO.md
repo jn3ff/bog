@@ -18,7 +18,7 @@ Annotations are validated against the actual code via tree-sitter analysis. A `.
 
 ```
 project/
-├── bogbot.toml          # Tooling config: agent registry, tree-sitter settings
+├── bog.toml          # Tooling config: agent registry, tree-sitter settings
 ├── repo.bog             # Repo-level: subsystem declarations, policies
 ├── src/
 │   ├── auth.rs
@@ -27,7 +27,7 @@ project/
 │   └── db.rs.bog
 ```
 
-Every `.bog` file is a sidecar to a source file. `repo.bog` is the root declaration. `bogbot.toml` is plain TOML config.
+Every `.bog` file is a sidecar to a source file. `repo.bog` is the root declaration. `bog.toml` is plain TOML config.
 
 ## Annotation Syntax
 
@@ -43,10 +43,10 @@ Line comments with `//`.
 
 ## Annotation Reference
 
-### `bogbot.toml`
+### `bog.toml`
 
 ```toml
-[bogbot]
+[bog]
 version = "0.1.0"
 
 [agents]
@@ -153,7 +153,7 @@ Prose for agents. Design decisions, gotchas, intent.
 )]
 ```
 
-Standard dimensions from `bogbot.toml` plus any custom ones. All values are `green`, `yellow`, or `red`.
+Standard dimensions from `bog.toml` plus any custom ones. All values are `green`, `yellow`, or `red`.
 
 #### `#[fn(name) { ... }]` — Function annotation
 
@@ -225,7 +225,7 @@ This is the gate. An agent that doesn't own a subsystem files a change request i
 2. Every `#[file(subsystem = "X")]` must match a `#[subsystem(X)]` in `repo.bog`
 3. Every `#[file(owner = "Y")]` must match the subsystem's declared owner
 4. Every file path must match at least one glob in its subsystem's `files` list
-5. Every agent must be registered in `bogbot.toml`
+5. Every agent must be registered in `bog.toml`
 
 ## Status Values
 
@@ -238,10 +238,10 @@ These are assertions, not suggestions. A `red` status is a signal to other agent
 ## CLI
 
 ```
-bogbot init                  # Scaffold bogbot.toml, repo.bog, example sidecar
-bogbot validate [path]       # Validate syntax + tree-sitter function matching
-bogbot status [path]         # Traffic light health report per subsystem
-bogbot check [path]          # Verify ownership consistency
+bog init                  # Scaffold bog.toml, repo.bog, example sidecar
+bog validate [path]       # Validate syntax + tree-sitter function matching
+bog status [path]         # Traffic light health report per subsystem
+bog check [path]          # Verify ownership consistency
 ```
 
 ## Where This Goes

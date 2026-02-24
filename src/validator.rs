@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use std::path::Path;
 
 use crate::ast::*;
-use crate::config::{AgentRole, BogbotConfig};
+use crate::config::{AgentRole, BogConfig};
 use crate::parser;
 use crate::treesitter;
 
@@ -31,7 +31,7 @@ pub enum ValidationError {
     #[error("In {file}: dependency '{dep}' references unknown path")]
     UnknownDependency { file: String, dep: String },
 
-    #[error("Agent '{agent}' not registered in bogbot.toml")]
+    #[error("Agent '{agent}' not registered in bog.toml")]
     UnregisteredAgent { agent: String },
 
     #[error("In {file}: function '{function}' has stub annotation (must be completed)")]
@@ -43,7 +43,7 @@ pub enum ValidationError {
     #[error("Skimsystem '{skimsystem}' targets undeclared subsystem '{subsystem}'")]
     SkimsystemTargetNotFound { skimsystem: String, subsystem: String },
 
-    #[error("Skimsystem '{skimsystem}' owner '{owner}' not registered in bogbot.toml")]
+    #[error("Skimsystem '{skimsystem}' owner '{owner}' not registered in bog.toml")]
     UnregisteredSkimAgent { skimsystem: String, owner: String },
 
     #[error("In {file}: skim observation for '{skimsystem}' targets fn '{function}' not found in source")]
@@ -122,7 +122,7 @@ pub fn validate_functions(
 pub fn validate_subsystem_consistency(
     repo_bog: &BogFile,
     file_bogs: &[(String, BogFile)],
-    config: &BogbotConfig,
+    config: &BogConfig,
 ) -> Vec<ValidationError> {
     let mut errors = Vec::new();
 
@@ -201,7 +201,7 @@ pub fn validate_subsystem_consistency(
 pub fn validate_skimsystem_consistency(
     repo_bog: &BogFile,
     file_bogs: &[(String, BogFile)],
-    config: &BogbotConfig,
+    config: &BogConfig,
 ) -> Vec<ValidationError> {
     let mut errors = Vec::new();
 
@@ -332,11 +332,11 @@ pub fn validate_project(root: &Path) -> ValidationReport {
     let mut files_checked = 0;
 
     // Load config
-    let config_path = root.join("bogbot.toml");
+    let config_path = root.join("bog.toml");
     let config = match crate::config::load_config(&config_path) {
         Ok(c) => Some(c),
         Err(e) => {
-            warnings.push(format!("Could not load bogbot.toml: {e}"));
+            warnings.push(format!("Could not load bog.toml: {e}"));
             None
         }
     };

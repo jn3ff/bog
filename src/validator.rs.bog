@@ -43,7 +43,7 @@
 #[fn(validate_subsystem_consistency) {
   status = green,
   contract = {
-    in = [(repo_bog, BogFile), (file_bogs, Vec), (config, BogbotConfig)],
+    in = [(repo_bog, BogFile), (file_bogs, Vec), (config, BogConfig)],
     out = "Vec<ValidationError>",
     invariants = [
       "checks subsystem existence",
@@ -58,7 +58,7 @@
 #[fn(validate_skimsystem_consistency) {
   status = green,
   contract = {
-    in = [(repo_bog, BogFile), (file_bogs, Vec), (config, BogbotConfig)],
+    in = [(repo_bog, BogFile), (file_bogs, Vec), (config, BogConfig)],
     out = "Vec<ValidationError>",
     invariants = [
       "checks skimsystem targets reference declared subsystems",

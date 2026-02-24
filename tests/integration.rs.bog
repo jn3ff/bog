@@ -8,7 +8,7 @@
 #[description {
   Integration tests. Validates config loading, parsing, tree-sitter extraction,
   function validation, skimsystem validation, and dogfood tests that ensure
-  bogbot validates itself including its own skimsystem annotations.
+  bog validates itself including its own skimsystem annotations.
 }]
 
 #[health(
@@ -19,7 +19,7 @@
 #[fn(test_config_loading) {
   status = green,
   deps = [config::load_config],
-  description = "Verifies bogbot.toml parsing"
+  description = "Verifies bog.toml parsing"
 }]
 
 #[fn(test_repo_bog_parsing) {
@@ -61,19 +61,19 @@
 #[fn(test_dogfood_validate) {
   status = green,
   deps = [validator::validate_project],
-  description = "Ensures bogbot validates its own .bog annotations"
+  description = "Ensures bog validates its own .bog annotations"
 }]
 
 #[fn(test_dogfood_health) {
   status = green,
   deps = [health::compute_health],
-  description = "Ensures health report works on bogbot itself"
+  description = "Ensures health report works on bog itself"
 }]
 
 #[fn(test_dogfood_skimsystem_declared) {
   status = green,
   deps = [parser::parse_bog],
-  description = "Ensures bogbot declares at least one skimsystem"
+  description = "Ensures bog declares at least one skimsystem"
 }]
 
 #[fn(test_dogfood_skim_observations_valid) {

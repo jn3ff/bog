@@ -370,7 +370,7 @@ mod tests {
 
     #[test]
     fn test_parse_cargo_diagnostic_basic() {
-        let json = r#"{"reason":"compiler-message","package_id":"bogbot","manifest_path":"Cargo.toml","message":{"rendered":"warning: foo","message":"this argument is passed by value, but not consumed","code":{"code":"clippy::needless_pass_by_value"},"level":"warning","spans":[{"file_name":"src/parser.rs","byte_start":100,"byte_end":200,"line_start":42,"line_end":42,"column_start":1,"column_end":10,"is_primary":true,"text":[]}],"children":[]}}"#;
+        let json = r#"{"reason":"compiler-message","package_id":"bog","manifest_path":"Cargo.toml","message":{"rendered":"warning: foo","message":"this argument is passed by value, but not consumed","code":{"code":"clippy::needless_pass_by_value"},"level":"warning","spans":[{"file_name":"src/parser.rs","byte_start":100,"byte_end":200,"line_start":42,"line_end":42,"column_start":1,"column_end":10,"is_primary":true,"text":[]}],"children":[]}}"#;
         let findings = parse_cargo_diagnostic(json);
         assert_eq!(findings.len(), 1);
         assert_eq!(findings[0].file_path, "src/parser.rs");
@@ -381,7 +381,7 @@ mod tests {
 
     #[test]
     fn test_parse_cargo_diagnostic_skips_non_warnings() {
-        let error_json = r#"{"reason":"compiler-message","package_id":"bogbot","manifest_path":"Cargo.toml","message":{"rendered":"error: foo","message":"cannot find","code":{"code":"E0425"},"level":"error","spans":[{"file_name":"src/foo.rs","byte_start":0,"byte_end":1,"line_start":1,"line_end":1,"column_start":1,"column_end":2,"is_primary":true,"text":[]}],"children":[]}}"#;
+        let error_json = r#"{"reason":"compiler-message","package_id":"bog","manifest_path":"Cargo.toml","message":{"rendered":"error: foo","message":"cannot find","code":{"code":"E0425"},"level":"error","spans":[{"file_name":"src/foo.rs","byte_start":0,"byte_end":1,"line_start":1,"line_end":1,"column_start":1,"column_end":2,"is_primary":true,"text":[]}],"children":[]}}"#;
         let build_json = r#"{"reason":"build-script-executed","package_id":"foo","out_dir":"/tmp"}"#;
         let input = format!("{error_json}\n{build_json}");
         let findings = parse_cargo_diagnostic(&input);
@@ -391,7 +391,7 @@ mod tests {
     #[test]
     fn test_parse_cargo_diagnostic_skips_no_code() {
         // Summary line: "warning: 5 warnings emitted" has no code
-        let json = r#"{"reason":"compiler-message","package_id":"bogbot","manifest_path":"Cargo.toml","message":{"rendered":"warning: 5 warnings emitted","message":"5 warnings emitted","code":null,"level":"warning","spans":[],"children":[]}}"#;
+        let json = r#"{"reason":"compiler-message","package_id":"bog","manifest_path":"Cargo.toml","message":{"rendered":"warning: 5 warnings emitted","message":"5 warnings emitted","code":null,"level":"warning","spans":[],"children":[]}}"#;
         let findings = parse_cargo_diagnostic(json);
         assert!(findings.is_empty());
     }

@@ -30,7 +30,7 @@
 
 #[fn(cmd_init) {
   status = green,
-  description = "Scaffolds bogbot.toml, repo.bog, and example sidecar"
+  description = "Scaffolds bog.toml, repo.bog, and example sidecar"
 }]
 
 #[fn(cmd_validate) {

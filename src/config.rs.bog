@@ -6,7 +6,7 @@
 )]
 
 #[description {
-  Parses bogbot.toml into typed config structs via serde.
+  Parses bog.toml into typed config structs via serde.
   Provides the agent registry, tree-sitter settings, and health dimension defaults.
 }]
 
@@ -21,9 +21,9 @@
   status = green,
   contract = {
     in = [(path, Path)],
-    out = "Result<BogbotConfig, ConfigError>"
+    out = "Result<BogConfig, ConfigError>"
   },
-  description = "Reads and deserializes bogbot.toml from disk"
+  description = "Reads and deserializes bog.toml from disk"
 }]
 
 #[fn(default_language) {

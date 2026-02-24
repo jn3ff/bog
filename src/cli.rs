@@ -8,7 +8,7 @@ use crate::stub;
 use crate::validator;
 
 #[derive(Parser)]
-#[command(name = "bogbot", version, about = "Agent-first codebase annotation system")]
+#[command(name = "bog", version, about = "Agent-first codebase annotation system")]
 pub struct Cli {
     #[command(subcommand)]
     pub command: Command,
@@ -16,7 +16,7 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Command {
-    /// Initialize bogbot in the current directory
+    /// Initialize bog in the current directory
     Init,
 
     /// Validate .bog files (syntax + tree-sitter)
@@ -108,14 +108,14 @@ pub fn run(cli: Cli) -> Result<(), Box<dyn std::error::Error>> {
 fn cmd_init() -> Result<(), Box<dyn std::error::Error>> {
     let root = Path::new(".");
 
-    // Create bogbot.toml
-    let config_path = root.join("bogbot.toml");
+    // Create bog.toml
+    let config_path = root.join("bog.toml");
     if config_path.exists() {
-        println!("{} bogbot.toml already exists, skipping", "note:".yellow());
+        println!("{} bog.toml already exists, skipping", "note:".yellow());
     } else {
         std::fs::write(
             &config_path,
-            r#"[bogbot]
+            r#"[bog]
 version = "0.1.0"
 
 [agents]
@@ -129,7 +129,7 @@ language = "rust"
 dimensions = ["test_coverage", "staleness", "complexity", "contract_compliance"]
 "#,
         )?;
-        println!("{} created bogbot.toml", "ok:".green());
+        println!("{} created bog.toml", "ok:".green());
     }
 
     // Create repo.bog
@@ -188,12 +188,12 @@ dimensions = ["test_coverage", "staleness", "complexity", "contract_compliance"]
     }
 
     println!(
-        "\n{} Edit bogbot.toml to register agents and configure health dimensions.",
+        "\n{} Edit bog.toml to register agents and configure health dimensions.",
         "next:".bold()
     );
     println!(
         "      Edit repo.bog to declare subsystems.\n      Run {} to verify.",
-        "bogbot validate".bold()
+        "bog validate".bold()
     );
 
     Ok(())
@@ -241,7 +241,7 @@ fn cmd_status(root: &Path) -> Result<(), Box<dyn std::error::Error>> {
 
     println!(
         "  Run {} for skimsystem details.\n",
-        "bogbot skim".bold()
+        "bog skim".bold()
     );
 
     Ok(())
@@ -589,7 +589,7 @@ fn cmd_stub(root: &Path) -> Result<(), Box<dyn std::error::Error>> {
     );
     println!(
         "  Run {} to see them. Fill in and remove {}.",
-        "bogbot stub --list".bold(),
+        "bog stub --list".bold(),
         "stub = true".bold()
     );
 

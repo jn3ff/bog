@@ -1,18 +1,18 @@
 use std::path::Path;
 
-use bogbot::ast::{Annotation, IntegrationFormat};
-use bogbot::config;
-use bogbot::health;
-use bogbot::parser;
-use bogbot::treesitter;
-use bogbot::validator;
+use bog::ast::{Annotation, IntegrationFormat};
+use bog::config;
+use bog::health;
+use bog::parser;
+use bog::treesitter;
+use bog::validator;
 
 // --- Config ---
 
 #[test]
 fn test_config_loading() {
-    let config = config::load_config(Path::new("bogbot.toml")).unwrap();
-    assert_eq!(config.bogbot.version, "0.1.0");
+    let config = config::load_config(Path::new("bog.toml")).unwrap();
+    assert_eq!(config.bog.version, "0.1.0");
     assert!(config.agents.contains_key("core-agent"));
     assert!(config.agents.contains_key("analysis-agent"));
     assert!(config.agents.contains_key("cli-agent"));
@@ -96,7 +96,7 @@ fn test_validate_functions_catches_mismatch() {
     }
 }
 
-// --- Dogfood: bogbot validates itself ---
+// --- Dogfood: bog validates itself ---
 
 #[test]
 fn test_dogfood_validate() {
@@ -109,7 +109,7 @@ fn test_dogfood_validate() {
     }
     assert!(
         report.is_ok(),
-        "bogbot must validate its own .bog annotations"
+        "bog must validate its own .bog annotations"
     );
     assert!(
         report.files_checked >= 10,
@@ -121,7 +121,7 @@ fn test_dogfood_validate() {
 #[test]
 fn test_dogfood_health() {
     let health = health::compute_health(Path::new("."));
-    assert_eq!(health.name, "bogbot");
+    assert_eq!(health.name, "bog");
     assert_eq!(health.subsystems.len(), 4);
 
     let names: Vec<&str> = health
@@ -146,7 +146,7 @@ fn test_dogfood_skimsystem_declared() {
         .collect();
     assert!(
         !skimsystems.is_empty(),
-        "bogbot should declare at least one skimsystem"
+        "bog should declare at least one skimsystem"
     );
 }
 

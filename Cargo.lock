@@ -86,7 +86,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "bogbot"
+name = "bog"
 version = "0.1.0"
 dependencies = [
  "chrono",
