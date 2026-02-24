@@ -51,6 +51,8 @@ fn parse_annotation(pair: Pair<Rule>) -> Result<Annotation, ParseError> {
         "health" => parse_health(inner),
         "fn" => parse_fn(inner),
         "subsystem" => parse_subsystem(inner),
+        "skimsystem" => parse_skimsystem(inner),
+        "skim" => parse_skim(inner),
         "policies" => parse_policies(inner),
         "change_requests" => parse_change_requests(inner),
         other => Err(ParseError::UnknownAnnotation(other.to_string())),
@@ -397,9 +399,12 @@ fn parse_fn(mut pairs: Pairs<Rule>) -> Result<Annotation, ParseError> {
         None
     };
 
+    let stub = matches!(map.get("stub"), Some(Value::Bool(true)));
+
     Ok(Annotation::Fn(FnAnnotation {
         name,
         status: require_status(&map, "status", "fn")?,
+        stub,
         deps: extract_string_list(&map, "deps"),
         refs: extract_string_list(&map, "refs"),
         contract,
@@ -421,6 +426,62 @@ fn parse_subsystem(mut pairs: Pairs<Rule>) -> Result<Annotation, ParseError> {
         files: extract_string_list(&map, "files"),
         status: require_status(&map, "status", "subsystem")?,
         description: opt_string(&map, "description"),
+    }))
+}
+
+fn parse_skimsystem(mut pairs: Pairs<Rule>) -> Result<Annotation, ParseError> {
+    let name = get_ident_from_parens(&mut pairs)
+        .ok_or_else(|| ParseError::MissingField {
+            context: "skimsystem".to_string(),
+            field: "name".to_string(),
+        })?;
+    let map = get_body_kv_map(&mut pairs)?;
+
+    let targets = match map.get("targets") {
+        Some(Value::Ident(s)) if s == "all" => SkimTargets::All,
+        Some(Value::List(items)) => {
+            let names = items
+                .iter()
+                .filter_map(|v| match v {
+                    Value::Ident(s) => Some(s.clone()),
+                    Value::String(s) => Some(unquote(s)),
+                    _ => None,
+                })
+                .collect();
+            SkimTargets::Named(names)
+        }
+        _ => SkimTargets::All,
+    };
+
+    Ok(Annotation::Skimsystem(SkimsystemDecl {
+        name,
+        owner: require_string(&map, "owner", "skimsystem")?,
+        targets,
+        status: require_status(&map, "status", "skimsystem")?,
+        principles: extract_string_list(&map, "principles"),
+        description: opt_string(&map, "description"),
+    }))
+}
+
+fn parse_skim(mut pairs: Pairs<Rule>) -> Result<Annotation, ParseError> {
+    let skimsystem = get_ident_from_parens(&mut pairs)
+        .ok_or_else(|| ParseError::MissingField {
+            context: "skim".to_string(),
+            field: "skimsystem name".to_string(),
+        })?;
+    let map = get_body_kv_map(&mut pairs)?;
+
+    let target = match map.get("target") {
+        Some(Value::FnRef(name)) => Some(SkimTarget::Fn(name.clone())),
+        Some(Value::Ident(s)) if s == "file" => Some(SkimTarget::File),
+        _ => None,
+    };
+
+    Ok(Annotation::Skim(SkimObservation {
+        skimsystem,
+        status: require_status(&map, "status", "skim")?,
+        notes: opt_string(&map, "notes"),
+        target,
     }))
 }
 
@@ -727,6 +788,106 @@ mod tests {
         assert!(matches!(&bog.annotations[3], Annotation::Subsystem(s) if s.name == "database"));
         // Check policies
         assert!(matches!(&bog.annotations[4], Annotation::Policies(_)));
+    }
+
+    #[test]
+    fn test_parse_skimsystem() {
+        let input = r#"
+#[skimsystem(test-concision) {
+  owner = "quality-agent",
+  targets = [core, analysis, cli],
+  status = green,
+  principles = [
+    "Each test should verify exactly one behavior",
+    "Test names should describe expected behavior"
+  ],
+  description = "Ensures test suites remain focused and readable"
+}]
+"#;
+        let bog = parse_bog(input).unwrap();
+        assert_eq!(bog.annotations.len(), 1);
+        match &bog.annotations[0] {
+            Annotation::Skimsystem(s) => {
+                assert_eq!(s.name, "test-concision");
+                assert_eq!(s.owner, "quality-agent");
+                assert_eq!(s.targets, SkimTargets::Named(vec![
+                    "core".to_string(),
+                    "analysis".to_string(),
+                    "cli".to_string(),
+                ]));
+                assert_eq!(s.status, Status::Green);
+                assert_eq!(s.principles.len(), 2);
+                assert!(s.principles[0].contains("one behavior"));
+            }
+            _ => panic!("expected Skimsystem annotation"),
+        }
+    }
+
+    #[test]
+    fn test_parse_skimsystem_targets_all() {
+        let input = r#"
+#[skimsystem(observability) {
+  owner = "ops-agent",
+  targets = all,
+  status = green,
+  description = "Ensures structured logging everywhere"
+}]
+"#;
+        let bog = parse_bog(input).unwrap();
+        match &bog.annotations[0] {
+            Annotation::Skimsystem(s) => {
+                assert_eq!(s.targets, SkimTargets::All);
+                assert!(s.principles.is_empty());
+            }
+            _ => panic!("expected Skimsystem annotation"),
+        }
+    }
+
+    #[test]
+    fn test_parse_skim_observation() {
+        let input = r#"
+#[file(
+  owner = "auth-agent",
+  subsystem = "authentication",
+  updated = "2026-02-18",
+  status = green
+)]
+
+#[skim(test-concision) {
+  status = yellow,
+  notes = "test_config_loading verifies multiple behaviors"
+}]
+"#;
+        let bog = parse_bog(input).unwrap();
+        assert_eq!(bog.annotations.len(), 2);
+        match &bog.annotations[1] {
+            Annotation::Skim(obs) => {
+                assert_eq!(obs.skimsystem, "test-concision");
+                assert_eq!(obs.status, Status::Yellow);
+                assert!(obs.notes.as_ref().unwrap().contains("multiple behaviors"));
+                assert!(obs.target.is_none());
+            }
+            _ => panic!("expected Skim annotation"),
+        }
+    }
+
+    #[test]
+    fn test_parse_skim_with_fn_target() {
+        let input = r#"
+#[skim(test-concision) {
+  status = red,
+  target = fn(login),
+  notes = "Function too complex"
+}]
+"#;
+        let bog = parse_bog(input).unwrap();
+        match &bog.annotations[0] {
+            Annotation::Skim(obs) => {
+                assert_eq!(obs.target, Some(SkimTarget::Fn("login".to_string())));
+                assert_eq!(obs.status, Status::Red);
+            }
+            _ => panic!("expected Skim annotation"),
+        }
     }
 
     #[test]

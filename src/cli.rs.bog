@@ -1,0 +1,75 @@
+#[file(
+  owner = "cli-agent",
+  subsystem = "cli",
+  updated = "2026-02-24",
+  status = green
+)]
+
+#[description {
+  CLI command definitions and dispatch. Implements init, validate, status,
+  check, stub, and skim commands. Thin layer: delegates to validator,
+  health, and stub modules.
+}]
+
+#[health(
+  test_coverage = yellow,
+  staleness = green,
+  complexity = green,
+  contract_compliance = green
+)]
+
+#[fn(run) {
+  status = green,
+  deps = [cmd_init, cmd_validate, cmd_status, cmd_check],
+  contract = {
+    in = [(cli, Cli)],
+    out = "Result<(), Box<dyn Error>>"
+  },
+  description = "Dispatches CLI command to handler"
+}]
+
+#[fn(cmd_init) {
+  status = green,
+  description = "Scaffolds bogbot.toml, repo.bog, and example sidecar"
+}]
+
+#[fn(cmd_validate) {
+  status = green,
+  deps = [validator::validate_project],
+  description = "Runs full project validation and prints results"
+}]
+
+#[fn(cmd_status) {
+  status = green,
+  deps = [health::compute_health, health::format_health_report],
+  description = "Computes and prints health report"
+}]
+
+#[fn(cmd_check) {
+  status = green,
+  deps = [validator::validate_project],
+  description = "Runs ownership consistency checks"
+}]
+
+#[fn(cmd_skim) {
+  status = green,
+  deps = [health::compute_health, parser::parse_bog],
+  description = "Shows skimsystem health, principles, and observations"
+}]
+
+#[fn(cmd_stub) {
+  status = green,
+  deps = [stub::find_missing_annotations, stub::apply_stubs],
+  description = "Generates stubs for unannotated functions and writes them to .bog files"
+}]
+
+#[fn(cmd_stub_list) {
+  status = green,
+  deps = [stub::list_stubs],
+  description = "Lists all stub annotations across the project"
+}]
+
+#[skim(annotation-quality) {
+  status = yellow,
+  notes = "test_coverage is yellow; CLI commands have no unit tests"
+}]

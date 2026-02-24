@@ -1,65 +1,81 @@
 use std::path::Path;
 
+use bogbot::ast::Annotation;
 use bogbot::config;
 use bogbot::health;
 use bogbot::parser;
 use bogbot::treesitter;
 use bogbot::validator;
 
-const FIXTURES: &str = "tests/fixtures";
+// --- Config ---
 
 #[test]
 fn test_config_loading() {
-    let config = config::load_config(Path::new(FIXTURES).join("bogbot.toml").as_path()).unwrap();
+    let config = config::load_config(Path::new("bogbot.toml")).unwrap();
     assert_eq!(config.bogbot.version, "0.1.0");
-    assert!(config.agents.contains_key("auth-agent"));
-    assert!(config.agents.contains_key("db-agent"));
+    assert!(config.agents.contains_key("core-agent"));
+    assert!(config.agents.contains_key("analysis-agent"));
+    assert!(config.agents.contains_key("cli-agent"));
+    assert!(config.agents.contains_key("quality-agent"));
     assert_eq!(config.tree_sitter.language, "rust");
-    assert_eq!(config.health.dimensions.len(), 3);
+    assert_eq!(config.health.dimensions.len(), 4);
 }
+
+// --- Parser ---
 
 #[test]
 fn test_repo_bog_parsing() {
-    let content = std::fs::read_to_string(Path::new(FIXTURES).join("repo.bog")).unwrap();
+    let content = std::fs::read_to_string("repo.bog").unwrap();
     let bog = parser::parse_bog(&content).unwrap();
-    assert_eq!(bog.annotations.len(), 3);
+    // repo, description, 4 subsystems, 1 skimsystem, policies
+    assert!(bog.annotations.len() >= 8);
 }
 
 #[test]
 fn test_file_bog_parsing() {
-    let content =
-        std::fs::read_to_string(Path::new(FIXTURES).join("src/auth.rs.bog")).unwrap();
+    let content = std::fs::read_to_string("src/parser.rs.bog").unwrap();
+    let bog = parser::parse_bog(&content).unwrap();
+    // file, description, health, plus many fn annotations
+    assert!(bog.annotations.len() >= 4);
+}
+
+#[test]
+fn test_fixture_bog_parsing() {
+    let content = std::fs::read_to_string("tests/fixtures/src/auth.rs.bog").unwrap();
     let bog = parser::parse_bog(&content).unwrap();
     // file, description, health, fn(login), fn(logout)
     assert_eq!(bog.annotations.len(), 5);
 }
 
+// --- Tree-sitter ---
+
 #[test]
 fn test_treesitter_validates_functions() {
-    let source = std::fs::read_to_string(Path::new(FIXTURES).join("src/auth.rs")).unwrap();
+    let source = std::fs::read_to_string("tests/fixtures/src/auth.rs").unwrap();
     let symbols = treesitter::extract_symbols(&source).unwrap();
     let names: Vec<&str> = symbols.iter().map(|s| s.name.as_str()).collect();
     assert!(names.contains(&"login"));
     assert!(names.contains(&"logout"));
 }
 
+// --- Validator ---
+
 #[test]
 fn test_validate_functions_match() {
-    let bog_path = Path::new(FIXTURES).join("src/auth.rs.bog");
-    let source_path = Path::new(FIXTURES).join("src/auth.rs");
-    let bog = validator::validate_syntax(&bog_path).unwrap();
-    let errors = validator::validate_functions(&bog_path, &bog, &source_path);
+    let bog_path = Path::new("tests/fixtures/src/auth.rs.bog");
+    let source_path = Path::new("tests/fixtures/src/auth.rs");
+    let bog = validator::validate_syntax(bog_path).unwrap();
+    let errors = validator::validate_functions(bog_path, &bog, source_path);
     assert!(errors.is_empty(), "Expected no errors, got: {errors:?}");
 }
 
 #[test]
 fn test_validate_functions_catches_mismatch() {
-    // Parse a .bog file that references a non-existent function
     let input = r#"
 #[file(
-  owner = "auth-agent",
-  subsystem = "authentication",
-  updated = "2026-02-18",
+  owner = "analysis-agent",
+  subsystem = "test-fixtures",
+  updated = "2026-02-24",
   status = green
 )]
 
@@ -68,9 +84,9 @@ fn test_validate_functions_catches_mismatch() {
 }]
 "#;
     let bog = parser::parse_bog(input).unwrap();
-    let source_path = Path::new(FIXTURES).join("src/auth.rs");
+    let source_path = Path::new("tests/fixtures/src/auth.rs");
     let bog_path = Path::new("test.rs.bog");
-    let errors = validator::validate_functions(bog_path, &bog, &source_path);
+    let errors = validator::validate_functions(bog_path, &bog, source_path);
     assert_eq!(errors.len(), 1);
     match &errors[0] {
         validator::ValidationError::MissingFunction { function, .. } => {
@@ -80,26 +96,106 @@ fn test_validate_functions_catches_mismatch() {
     }
 }
 
+// --- Dogfood: bogbot validates itself ---
+
 #[test]
-fn test_full_project_validation() {
-    let report = validator::validate_project(Path::new(FIXTURES));
+fn test_dogfood_validate() {
+    let report = validator::validate_project(Path::new("."));
     for e in &report.errors {
-        eprintln!("  error: {e}");
+        eprintln!("  dogfood error: {e}");
     }
     for w in &report.warnings {
-        eprintln!("  warn: {w}");
+        eprintln!("  dogfood warn: {w}");
     }
-    assert!(report.is_ok(), "Expected validation to pass");
-    assert!(report.files_checked >= 2);
+    assert!(
+        report.is_ok(),
+        "bogbot must validate its own .bog annotations"
+    );
+    assert!(
+        report.files_checked >= 10,
+        "expected at least 10 .bog files, got {}",
+        report.files_checked
+    );
 }
 
 #[test]
-fn test_health_report() {
-    let health = health::compute_health(Path::new(FIXTURES));
-    assert_eq!(health.name, "test-project");
-    assert!(!health.subsystems.is_empty());
+fn test_dogfood_health() {
+    let health = health::compute_health(Path::new("."));
+    assert_eq!(health.name, "bogbot");
+    assert_eq!(health.subsystems.len(), 4);
 
-    let auth = &health.subsystems[0];
-    assert_eq!(auth.name, "authentication");
-    assert_eq!(auth.owner, "auth-agent");
+    let names: Vec<&str> = health
+        .subsystems
+        .iter()
+        .map(|s| s.name.as_str())
+        .collect();
+    assert!(names.contains(&"core"));
+    assert!(names.contains(&"analysis"));
+    assert!(names.contains(&"cli"));
+    assert!(names.contains(&"test-fixtures"));
+}
+
+#[test]
+fn test_dogfood_skimsystem_declared() {
+    let content = std::fs::read_to_string("repo.bog").unwrap();
+    let bog = parser::parse_bog(&content).unwrap();
+    let skimsystems: Vec<_> = bog
+        .annotations
+        .iter()
+        .filter(|a| matches!(a, Annotation::Skimsystem(_)))
+        .collect();
+    assert!(
+        !skimsystems.is_empty(),
+        "bogbot should declare at least one skimsystem"
+    );
+}
+
+#[test]
+fn test_dogfood_skim_observations_valid() {
+    let report = validator::validate_project(Path::new("."));
+    let skim_errors: Vec<_> = report
+        .errors
+        .iter()
+        .filter(|e| {
+            matches!(
+                e,
+                validator::ValidationError::UndeclaredSkimsystem { .. }
+                    | validator::ValidationError::SkimTargetFunctionMissing { .. }
+            )
+        })
+        .collect();
+    assert!(
+        skim_errors.is_empty(),
+        "all skim observations should reference valid skimsystems: {skim_errors:?}"
+    );
+}
+
+#[test]
+fn test_dogfood_skimsystem_health() {
+    let health = health::compute_health(Path::new("."));
+    assert!(
+        !health.skimsystems.is_empty(),
+        "should have skimsystem health"
+    );
+    let aq = health
+        .skimsystems
+        .iter()
+        .find(|s| s.name == "annotation-quality");
+    assert!(aq.is_some(), "should have annotation-quality skimsystem");
+    assert!(
+        aq.unwrap().observation_count > 0,
+        "annotation-quality should have observations"
+    );
+}
+
+#[test]
+fn test_dogfood_every_subsystem_has_files() {
+    let health = health::compute_health(Path::new("."));
+    for sub in &health.subsystems {
+        assert!(
+            sub.file_count > 0,
+            "subsystem '{}' has no annotated files",
+            sub.name
+        );
+    }
 }

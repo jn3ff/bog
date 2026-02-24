@@ -1,0 +1,14 @@
+[bogbot]
+version = "0.1.0"
+
+[agents]
+core-agent = { role = "subsystem", description = "Owns parsing, AST, and config" }
+analysis-agent = { role = "subsystem", description = "Owns tree-sitter bridge, validation, and health reporting" }
+cli-agent = { role = "subsystem", description = "Owns CLI interface and entry point" }
+quality-agent = { role = "skimsystem", description = "Cross-cutting annotation quality observer" }
+
+[tree_sitter]
+language = "rust"
+
+[health]
+dimensions = ["test_coverage", "staleness", "complexity", "contract_compliance"]

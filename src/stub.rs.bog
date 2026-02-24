@@ -1,0 +1,71 @@
+#[file(
+  owner = "analysis-agent",
+  subsystem = "analysis",
+  updated = "2026-02-24",
+  status = green
+)]
+
+#[description {
+  Stub generation engine. Finds functions without .bog annotations,
+  generates stub entries with inferred deps from tree-sitter call analysis,
+  and appends them to sidecar files. Stubs use stub=true which causes
+  bog validate to fail until the agent fills them in.
+}]
+
+#[health(
+  test_coverage = yellow,
+  staleness = green,
+  complexity = green
+)]
+
+#[fn(find_missing_annotations) {
+  status = green,
+  deps = [parser::parse_bog, treesitter::extract_symbols],
+  contract = {
+    in = [(root, Path)],
+    out = "Vec<(PathBuf, PathBuf, Vec<Symbol>)>",
+    invariants = ["skips impl methods", "skips already-annotated functions"]
+  },
+  description = "Walks .rs files, diffs tree-sitter symbols against .bog annotations"
+}]
+
+#[fn(generate_stub) {
+  status = green,
+  contract = {
+    in = [(symbol, Symbol)],
+    out = "String"
+  },
+  description = "Formats a stub annotation block with status=yellow, stub=true, inferred deps"
+}]
+
+#[fn(generate_file_header) {
+  status = green,
+  deps = [find_subsystem_for_file],
+  description = "Creates a minimal #[file(...)] header for a new .bog sidecar"
+}]
+
+#[fn(find_subsystem_for_file) {
+  status = green,
+  deps = [parser::parse_bog],
+  description = "Matches a source file path against repo.bog subsystem globs"
+}]
+
+#[fn(apply_stubs) {
+  status = green,
+  deps = [find_missing_annotations, generate_stub, generate_file_header],
+  contract = {
+    in = [(root, Path)],
+    out = "StubReport"
+  },
+  description = "Generates and writes stub annotations to .bog files"
+}]
+
+#[fn(list_stubs) {
+  status = green,
+  deps = [parser::parse_bog],
+  contract = {
+    in = [(root, Path)],
+    out = "Vec<(String, String)>"
+  },
+  description = "Finds all fn annotations with stub=true across the project"
+}]

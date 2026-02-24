@@ -2,7 +2,7 @@ use std::collections::HashSet;
 use std::path::Path;
 
 use crate::ast::*;
-use crate::config::BogbotConfig;
+use crate::config::{AgentRole, BogbotConfig};
 use crate::parser;
 use crate::treesitter;
 
@@ -33,6 +33,24 @@ pub enum ValidationError {
 
     #[error("Agent '{agent}' not registered in bogbot.toml")]
     UnregisteredAgent { agent: String },
+
+    #[error("In {file}: function '{function}' has stub annotation (must be completed)")]
+    StubAnnotation { file: String, function: String },
+
+    #[error("In {file}: skimsystem '{skimsystem}' not declared in repo.bog")]
+    UndeclaredSkimsystem { file: String, skimsystem: String },
+
+    #[error("Skimsystem '{skimsystem}' targets undeclared subsystem '{subsystem}'")]
+    SkimsystemTargetNotFound { skimsystem: String, subsystem: String },
+
+    #[error("Skimsystem '{skimsystem}' owner '{owner}' not registered in bogbot.toml")]
+    UnregisteredSkimAgent { skimsystem: String, owner: String },
+
+    #[error("In {file}: skim observation for '{skimsystem}' targets fn '{function}' not found in source")]
+    SkimTargetFunctionMissing { file: String, skimsystem: String, function: String },
+
+    #[error("Agent '{agent}' has role {actual} but owns {context} (expected role {expected})")]
+    AgentRoleMismatch { agent: String, context: String, expected: String, actual: String },
 }
 
 #[derive(Debug)]
@@ -84,6 +102,12 @@ pub fn validate_functions(
         if let Annotation::Fn(f) = ann {
             if !fn_names.contains(f.name.as_str()) {
                 errors.push(ValidationError::MissingFunction {
+                    file: bog_path.display().to_string(),
+                    function: f.name.clone(),
+                });
+            }
+            if f.stub {
+                errors.push(ValidationError::StubAnnotation {
                     file: bog_path.display().to_string(),
                     function: f.name.clone(),
                 });
@@ -156,8 +180,145 @@ pub fn validate_subsystem_consistency(
                     errors.push(ValidationError::UnregisteredAgent {
                         agent: f.owner.clone(),
                     });
+                } else if let Some(agent_cfg) = config.agents.get(&f.owner) {
+                    if agent_cfg.role != AgentRole::Subsystem {
+                        errors.push(ValidationError::AgentRoleMismatch {
+                            agent: f.owner.clone(),
+                            context: format!("subsystem '{}'", f.subsystem),
+                            expected: "subsystem".to_string(),
+                            actual: "skimsystem".to_string(),
+                        });
+                    }
                 }
             }
+        }
+    }
+
+    errors
+}
+
+/// Validate skimsystem declarations and skim observations
+pub fn validate_skimsystem_consistency(
+    repo_bog: &BogFile,
+    file_bogs: &[(String, BogFile)],
+    config: &BogbotConfig,
+) -> Vec<ValidationError> {
+    let mut errors = Vec::new();
+
+    // Collect subsystem names
+    let subsystem_names: HashSet<String> = repo_bog
+        .annotations
+        .iter()
+        .filter_map(|a| {
+            if let Annotation::Subsystem(s) = a {
+                Some(s.name.clone())
+            } else {
+                None
+            }
+        })
+        .collect();
+
+    // Collect skimsystem declarations
+    let mut skimsystem_names: HashSet<String> = HashSet::new();
+    let registered_agents: HashSet<&str> = config.agents.keys().map(|s| s.as_str()).collect();
+
+    for ann in &repo_bog.annotations {
+        if let Annotation::Skimsystem(sk) = ann {
+            skimsystem_names.insert(sk.name.clone());
+
+            // Check owner is registered
+            if !registered_agents.contains(sk.owner.as_str()) {
+                errors.push(ValidationError::UnregisteredSkimAgent {
+                    skimsystem: sk.name.clone(),
+                    owner: sk.owner.clone(),
+                });
+            } else if let Some(agent_cfg) = config.agents.get(&sk.owner) {
+                if agent_cfg.role != AgentRole::Skimsystem {
+                    errors.push(ValidationError::AgentRoleMismatch {
+                        agent: sk.owner.clone(),
+                        context: format!("skimsystem '{}'", sk.name),
+                        expected: "skimsystem".to_string(),
+                        actual: "subsystem".to_string(),
+                    });
+                }
+            }
+
+            // Check named targets reference real subsystems
+            if let SkimTargets::Named(targets) = &sk.targets {
+                for target in targets {
+                    if !subsystem_names.contains(target) {
+                        errors.push(ValidationError::SkimsystemTargetNotFound {
+                            skimsystem: sk.name.clone(),
+                            subsystem: target.clone(),
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    // Check skim observations reference declared skimsystems
+    for (path, bog) in file_bogs {
+        for ann in &bog.annotations {
+            if let Annotation::Skim(obs) = ann {
+                if !skimsystem_names.contains(&obs.skimsystem) {
+                    errors.push(ValidationError::UndeclaredSkimsystem {
+                        file: path.clone(),
+                        skimsystem: obs.skimsystem.clone(),
+                    });
+                }
+            }
+        }
+    }
+
+    errors
+}
+
+/// Validate skim observations that target specific functions
+pub fn validate_skim_targets(
+    bog_path: &Path,
+    bog_file: &BogFile,
+    source_path: &Path,
+) -> Vec<ValidationError> {
+    let mut errors = Vec::new();
+
+    // Only check if there are skim observations with fn targets
+    let fn_targets: Vec<(&str, &str)> = bog_file
+        .annotations
+        .iter()
+        .filter_map(|a| {
+            if let Annotation::Skim(obs) = a {
+                if let Some(SkimTarget::Fn(name)) = &obs.target {
+                    return Some((obs.skimsystem.as_str(), name.as_str()));
+                }
+            }
+            None
+        })
+        .collect();
+
+    if fn_targets.is_empty() {
+        return errors;
+    }
+
+    let source = match std::fs::read_to_string(source_path) {
+        Ok(s) => s,
+        Err(_) => return errors,
+    };
+
+    let symbols = match treesitter::extract_symbols(&source) {
+        Ok(s) => s,
+        Err(_) => return errors,
+    };
+
+    let fn_names: HashSet<&str> = symbols.iter().map(|s| s.name.as_str()).collect();
+
+    for (skimsystem, function) in fn_targets {
+        if !fn_names.contains(function) {
+            errors.push(ValidationError::SkimTargetFunctionMissing {
+                file: bog_path.display().to_string(),
+                skimsystem: skimsystem.to_string(),
+                function: function.to_string(),
+            });
         }
     }
 
@@ -209,11 +370,19 @@ pub fn validate_project(root: &Path) -> ValidationReport {
                 continue;
             }
 
+            // Skip build artifacts and git internals
+            let rel = entry.strip_prefix(root).unwrap_or(&entry);
+            if rel.components().any(|c| {
+                matches!(c.as_os_str().to_str(), Some("target" | ".git"))
+            }) {
+                continue;
+            }
+
             match validate_syntax(&entry) {
                 Ok(bog) => {
                     files_checked += 1;
 
-                    // If it's a .rs.bog file, validate functions against source
+                    // If it's a .rs.bog file, validate functions and skim targets against source
                     let entry_str = entry.to_string_lossy().to_string();
                     if entry_str.ends_with(".rs.bog") {
                         let source_path_str = entry_str.strip_suffix(".bog").unwrap();
@@ -221,6 +390,8 @@ pub fn validate_project(root: &Path) -> ValidationReport {
                         if source_path.exists() {
                             let fn_errors = validate_functions(&entry, &bog, source_path);
                             errors.extend(fn_errors);
+                            let skim_errors = validate_skim_targets(&entry, &bog, source_path);
+                            errors.extend(skim_errors);
                         } else {
                             warnings.push(format!(
                                 "Source file not found for {entry_str}: expected {source_path_str}"
@@ -250,6 +421,10 @@ pub fn validate_project(root: &Path) -> ValidationReport {
     if let (Some(repo), Some(cfg)) = (&repo_bog, &config) {
         let consistency_errors = validate_subsystem_consistency(repo, &file_bogs, cfg);
         errors.extend(consistency_errors);
+
+        // Skimsystem consistency check
+        let skim_errors = validate_skimsystem_consistency(repo, &file_bogs, cfg);
+        errors.extend(skim_errors);
     }
 
     ValidationReport {

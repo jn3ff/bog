@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 use tree_sitter::Parser;
 
 #[derive(Debug, Clone)]
@@ -8,6 +10,7 @@ pub struct Symbol {
     pub return_type: Option<String>,
     pub start_line: usize,
     pub end_line: usize,
+    pub calls: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -49,7 +52,6 @@ fn collect_symbols(node: tree_sitter::Node, source: &[u8], symbols: &mut Vec<Sym
             }
         }
         "impl_item" => {
-            // Look for methods inside impl blocks
             for i in 0..node.child_count() {
                 let child = node.child(i).unwrap();
                 if child.kind() == "declaration_list" {
@@ -99,6 +101,14 @@ fn extract_function(node: tree_sitter::Node, source: &[u8]) -> Option<Symbol> {
         .child_by_field_name("return_type")
         .map(|n| n.utf8_text(source).unwrap_or("").to_string());
 
+    // Extract function calls from the body
+    let mut calls = BTreeSet::new();
+    if let Some(body) = node.child_by_field_name("body") {
+        extract_calls(body, source, &mut calls);
+    }
+    // Remove self-references
+    calls.remove(&name);
+
     Some(Symbol {
         name,
         kind: SymbolKind::Function,
@@ -106,7 +116,55 @@ fn extract_function(node: tree_sitter::Node, source: &[u8]) -> Option<Symbol> {
         return_type,
         start_line: name_node.start_position().row + 1,
         end_line: node.end_position().row + 1,
+        calls: calls.into_iter().collect(),
     })
+}
+
+fn extract_calls(node: tree_sitter::Node, source: &[u8], calls: &mut BTreeSet<String>) {
+    if node.kind() == "call_expression" {
+        if let Some(func) = node.child_by_field_name("function") {
+            match func.kind() {
+                "identifier" => {
+                    if let Ok(name) = func.utf8_text(source) {
+                        // Skip common non-function identifiers
+                        if !is_builtin(name) {
+                            calls.insert(name.to_string());
+                        }
+                    }
+                }
+                "scoped_identifier" => {
+                    if let Ok(path) = func.utf8_text(source) {
+                        // Skip Self::, self::, and stdlib type constructors
+                        let root_segment = path.split("::").next().unwrap_or("");
+                        if !path.starts_with("Self::")
+                            && !path.starts_with("self::")
+                            && !is_builtin(root_segment)
+                        {
+                            calls.insert(path.to_string());
+                        }
+                    }
+                }
+                // Skip field_expression (method calls on objects like obj.method())
+                _ => {}
+            }
+        }
+    }
+
+    for i in 0..node.child_count() {
+        extract_calls(node.child(i).unwrap(), source, calls);
+    }
+}
+
+fn is_builtin(name: &str) -> bool {
+    matches!(
+        name,
+        "Some" | "None" | "Ok" | "Err" | "Box" | "Vec" | "String" | "format" | "println"
+            | "eprintln" | "print" | "eprint" | "write" | "writeln" | "panic" | "todo"
+            | "unimplemented" | "unreachable" | "assert" | "assert_eq" | "assert_ne"
+            | "debug_assert" | "debug_assert_eq" | "debug_assert_ne" | "cfg" | "include"
+            | "include_str" | "include_bytes" | "env" | "option_env" | "concat" | "line"
+            | "column" | "file" | "stringify" | "module_path"
+    )
 }
 
 #[cfg(test)]
@@ -152,5 +210,44 @@ impl Auth {
         assert_eq!(symbols[0].kind, SymbolKind::Method);
         assert_eq!(symbols[1].name, "verify");
         assert_eq!(symbols[1].kind, SymbolKind::Method);
+    }
+
+    #[test]
+    fn test_extract_calls() {
+        let source = r#"
+fn process(input: &str) -> Result<Output, Error> {
+    let parsed = parse_input(input);
+    let validated = validator::check(parsed);
+    let result = validated.transform();
+    db::store(result)
+}
+"#;
+        let symbols = extract_symbols(source).unwrap();
+        assert_eq!(symbols.len(), 1);
+        let calls = &symbols[0].calls;
+        assert!(calls.contains(&"parse_input".to_string()));
+        assert!(calls.contains(&"validator::check".to_string()));
+        assert!(calls.contains(&"db::store".to_string()));
+        // method call .transform() should NOT be included
+        assert!(!calls.iter().any(|c| c.contains("transform")));
+    }
+
+    #[test]
+    fn test_skips_self_and_builtins() {
+        let source = r#"
+fn example() {
+    let v = Vec::new();
+    let s = Some(42);
+    println!("hello");
+    Self::helper();
+    real_function();
+}
+"#;
+        let symbols = extract_symbols(source).unwrap();
+        let calls = &symbols[0].calls;
+        assert!(calls.contains(&"real_function".to_string()));
+        assert!(!calls.iter().any(|c| c.contains("Vec")));
+        assert!(!calls.iter().any(|c| c.contains("Some")));
+        assert!(!calls.iter().any(|c| c.contains("Self")));
     }
 }

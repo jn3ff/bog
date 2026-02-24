@@ -1,0 +1,32 @@
+#[file(
+  owner = "core-agent",
+  subsystem = "core",
+  updated = "2026-02-24",
+  status = green
+)]
+
+#[description {
+  Parses bogbot.toml into typed config structs via serde.
+  Provides the agent registry, tree-sitter settings, and health dimension defaults.
+}]
+
+#[health(
+  test_coverage = green,
+  staleness = green,
+  complexity = green,
+  contract_compliance = green
+)]
+
+#[fn(load_config) {
+  status = green,
+  contract = {
+    in = [(path, Path)],
+    out = "Result<BogbotConfig, ConfigError>"
+  },
+  description = "Reads and deserializes bogbot.toml from disk"
+}]
+
+#[fn(default_language) {
+  status = green,
+  description = "Serde default for tree_sitter.language field, returns rust"
+}]

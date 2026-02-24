@@ -1,0 +1,16 @@
+#[file(
+  owner = "core-agent",
+  subsystem = "core",
+  updated = "2026-02-24",
+  status = green
+)]
+
+#[description {
+  Library root. Re-exports all public modules. No logic lives here.
+}]
+
+#[health(
+  test_coverage = green,
+  staleness = green,
+  complexity = green
+)]

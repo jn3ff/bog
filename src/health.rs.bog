@@ -1,0 +1,73 @@
+#[file(
+  owner = "analysis-agent",
+  subsystem = "analysis",
+  updated = "2026-02-24",
+  status = green
+)]
+
+#[description {
+  Health aggregation and reporting. Computes per-subsystem and per-skimsystem
+  health by walking .bog sidecars, aggregating status dimensions, function
+  health, and skim observations into a traffic light display.
+}]
+
+#[health(
+  test_coverage = green,
+  staleness = green,
+  complexity = green,
+  contract_compliance = green
+)]
+
+#[fn(compute_health) {
+  status = green,
+  deps = [parser::parse_bog],
+  contract = {
+    in = [(root, Path)],
+    out = "RepoHealth"
+  },
+  description = "Walks project, aggregates health across subsystems"
+}]
+
+#[fn(aggregate_file_health) {
+  status = green,
+  description = "Folds a single .bog file's health and fn statuses into SubsystemHealth"
+}]
+
+#[fn(format_health_report) {
+  status = green,
+  contract = {
+    in = [(health, RepoHealth)],
+    out = "String"
+  },
+  description = "Renders health report as colored terminal output"
+}]
+
+#[fn(format_status) {
+  status = green,
+  description = "Converts Status to a colored traffic light dot"
+}]
+
+#[fn(add) {
+  status = green,
+  description = "Increments the counter for the given status color"
+}]
+
+#[fn(overall) {
+  status = green,
+  description = "Returns the worst status across all counts"
+}]
+
+#[fn(total) {
+  status = green,
+  description = "Returns total count across all statuses"
+}]
+
+#[fn(overall_status) {
+  status = green,
+  description = "Returns the worst status across all subsystems"
+}]
+
+#[skim(annotation-quality) {
+  status = green,
+  notes = "All functions annotated with contracts and descriptions"
+}]

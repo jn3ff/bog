@@ -1,0 +1,22 @@
+#[file(
+  owner = "cli-agent",
+  subsystem = "cli",
+  updated = "2026-02-24",
+  status = green
+)]
+
+#[description {
+  Thin CLI entry point. Parses args via clap, delegates to cli::run.
+}]
+
+#[health(
+  test_coverage = green,
+  staleness = green,
+  complexity = green
+)]
+
+#[fn(main) {
+  status = green,
+  deps = [cli::run],
+  description = "Entry point: parse CLI args and dispatch"
+}]

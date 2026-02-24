@@ -1,0 +1,26 @@
+#[file(
+  owner = "core-agent",
+  subsystem = "core",
+  updated = "2026-02-24",
+  status = green
+)]
+
+#[description {
+  AST types for .bog files. Pure data definitions, no parsing logic.
+  All annotation types map to structs here: BogFile, Annotation variants,
+  FileAnnotation, FnAnnotation, Contract, SubsystemDecl, ChangeRequest, etc.
+  Status enum (green/yellow/red) is the universal health signal.
+  Value enum covers all .bog value types including nested blocks.
+}]
+
+#[health(
+  test_coverage = green,
+  staleness = green,
+  complexity = green,
+  contract_compliance = green
+)]
+
+#[skim(annotation-quality) {
+  status = green,
+  notes = "Pure data types; no function annotations needed beyond types"
+}]

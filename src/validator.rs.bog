@@ -1,0 +1,95 @@
+#[file(
+  owner = "analysis-agent",
+  subsystem = "analysis",
+  updated = "2026-02-24",
+  status = green
+)]
+
+#[description {
+  Validation engine. Checks .bog files for syntax correctness, verifies
+  function annotations against source via tree-sitter, validates
+  subsystem/ownership consistency, and validates skimsystem declarations
+  and skim observations against repo.bog.
+}]
+
+#[health(
+  test_coverage = green,
+  staleness = green,
+  complexity = yellow,
+  contract_compliance = green
+)]
+
+#[fn(validate_syntax) {
+  status = green,
+  deps = [parser::parse_bog],
+  contract = {
+    in = [(path, Path)],
+    out = "Result<BogFile, ValidationError>"
+  },
+  description = "Reads and parses a .bog file, returning AST or syntax error"
+}]
+
+#[fn(validate_functions) {
+  status = green,
+  deps = [treesitter::extract_symbols],
+  contract = {
+    in = [(bog_path, Path), (bog_file, BogFile), (source_path, Path)],
+    out = "Vec<ValidationError>",
+    invariants = ["reports every fn annotation that lacks a matching source function"]
+  },
+  description = "Checks #[fn(name)] annotations against tree-sitter extracted symbols"
+}]
+
+#[fn(validate_subsystem_consistency) {
+  status = green,
+  contract = {
+    in = [(repo_bog, BogFile), (file_bogs, Vec), (config, BogbotConfig)],
+    out = "Vec<ValidationError>",
+    invariants = [
+      "checks subsystem existence",
+      "checks owner matches subsystem declaration",
+      "checks file path matches subsystem globs",
+      "checks agent is registered"
+    ]
+  },
+  description = "Verifies file ownership matches repo.bog subsystem declarations"
+}]
+
+#[fn(validate_skimsystem_consistency) {
+  status = green,
+  contract = {
+    in = [(repo_bog, BogFile), (file_bogs, Vec), (config, BogbotConfig)],
+    out = "Vec<ValidationError>",
+    invariants = [
+      "checks skimsystem targets reference declared subsystems",
+      "checks skimsystem owners are registered agents",
+      "checks skim observations reference declared skimsystems"
+    ]
+  },
+  description = "Verifies skimsystem declarations and skim observation references"
+}]
+
+#[fn(validate_skim_targets) {
+  status = green,
+  deps = [treesitter::extract_symbols],
+  contract = {
+    in = [(bog_path, Path), (bog_file, BogFile), (source_path, Path)],
+    out = "Vec<ValidationError>"
+  },
+  description = "Checks skim observations with fn targets against tree-sitter symbols"
+}]
+
+#[fn(validate_project) {
+  status = green,
+  deps = [validate_syntax, validate_functions, validate_subsystem_consistency, validate_skimsystem_consistency, config::load_config],
+  contract = {
+    in = [(root, Path)],
+    out = "ValidationReport"
+  },
+  description = "Full project validation: finds all .bog files, runs all checks"
+}]
+
+#[fn(is_ok) {
+  status = green,
+  description = "Returns true if no validation errors were found"
+}]

@@ -22,6 +22,16 @@ pub struct BogbotMeta {
 #[derive(Debug, Deserialize)]
 pub struct AgentConfig {
     pub description: String,
+    #[serde(default)]
+    pub role: AgentRole,
+}
+
+#[derive(Debug, Deserialize, Default, Clone, Copy, PartialEq, Eq)]
+#[serde(rename_all = "lowercase")]
+pub enum AgentRole {
+    #[default]
+    Subsystem,
+    Skimsystem,
 }
 
 #[derive(Debug, Deserialize, Default)]

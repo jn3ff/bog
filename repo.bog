@@ -1,0 +1,61 @@
+#[repo(
+  name = "bogbot",
+  version = "0.1.0",
+  updated = "2026-02-24"
+)]
+
+#[description {
+  Agent-first codebase annotation system. Provides a structured annotation
+  layer (.bog sidecar files) validated against source code via tree-sitter.
+  Enforces module autonomy with gates: owning agents have internal freedom,
+  cross-module changes go through change requests.
+}]
+
+#[subsystem(core) {
+  owner = "core-agent",
+  files = ["src/ast.rs", "src/parser.rs", "src/config.rs", "src/lib.rs"],
+  status = green,
+  description = "Data model, .bog parser (pest), and config loading"
+}]
+
+#[subsystem(analysis) {
+  owner = "analysis-agent",
+  files = ["src/treesitter.rs", "src/validator.rs", "src/health.rs", "src/stub.rs"],
+  status = green,
+  description = "Tree-sitter bridge, validation logic, and health aggregation"
+}]
+
+#[subsystem(cli) {
+  owner = "cli-agent",
+  files = ["src/cli.rs", "src/main.rs"],
+  status = green,
+  description = "CLI commands and entry point"
+}]
+
+#[subsystem(test-fixtures) {
+  owner = "analysis-agent",
+  files = ["tests/fixtures/src/auth.rs", "tests/integration.rs"],
+  status = green,
+  description = "Test fixture source files used by integration tests"
+}]
+
+#[skimsystem(annotation-quality) {
+  owner = "quality-agent",
+  targets = all,
+  status = green,
+  principles = [
+    "Every .bog file should have a description block",
+    "Health dimensions should include at least test_coverage and staleness",
+    "Function annotations should include descriptions"
+  ],
+  description = "Ensures .bog annotations are complete and informative"
+}]
+
+#[policies {
+  require_contracts = true,
+  require_owner = true,
+  health_thresholds = {
+    red_max_days = 7,
+    stale_after_days = 30
+  }
+}]

@@ -1,0 +1,75 @@
+#[file(
+  owner = "analysis-agent",
+  subsystem = "analysis",
+  updated = "2026-02-24",
+  status = green
+)]
+
+#[description {
+  Tree-sitter bridge for Rust source analysis. Parses .rs files and extracts
+  function/method symbols with names, parameters, and return types. Used by
+  the validator to check that #[fn(name)] annotations reference real functions.
+}]
+
+#[health(
+  test_coverage = green,
+  staleness = green,
+  complexity = green,
+  contract_compliance = green
+)]
+
+#[fn(extract_symbols) {
+  status = green,
+  refs = [validator::validate_functions],
+  contract = {
+    in = [(source, str)],
+    out = "Result<Vec<Symbol>, TreeSitterError>",
+    invariants = ["returns all top-level functions and impl methods"]
+  },
+  description = "Parses Rust source and extracts all function/method symbols"
+}]
+
+#[fn(collect_symbols) {
+  status = green,
+  description = "Recursive tree walker that finds function_item and impl_item nodes"
+}]
+
+#[fn(extract_function) {
+  status = green,
+  description = "Extracts Symbol from a single function_item node"
+}]
+
+#[fn(extract_calls) {
+  status = green,
+  deps = [is_builtin],
+  description = "Walks tree-sitter nodes to find call_expression patterns in function bodies"
+}]
+
+#[fn(is_builtin) {
+  status = green,
+  description = "Returns true for common Rust stdlib identifiers that should not be tracked as deps"
+}]
+
+#[fn(test_extract_functions) {
+  status = green,
+  deps = [extract_symbols],
+  description = "Verifies extraction of top-level functions"
+}]
+
+#[fn(test_extract_methods) {
+  status = green,
+  deps = [extract_symbols],
+  description = "Verifies extraction of impl methods"
+}]
+
+#[fn(test_extract_calls) {
+  status = green,
+  deps = [extract_symbols],
+  description = "Verifies call inference from function bodies"
+}]
+
+#[fn(test_skips_self_and_builtins) {
+  status = green,
+  deps = [extract_symbols],
+  description = "Verifies Self:: and stdlib calls are filtered out"
+}]

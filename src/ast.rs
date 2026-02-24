@@ -45,6 +45,8 @@ pub enum Annotation {
     Health(HealthAnnotation),
     Fn(FnAnnotation),
     Subsystem(SubsystemDecl),
+    Skimsystem(SkimsystemDecl),
+    Skim(SkimObservation),
     Policies(PoliciesAnnotation),
     ChangeRequests(Vec<ChangeRequest>),
 }
@@ -73,6 +75,7 @@ pub struct HealthAnnotation {
 pub struct FnAnnotation {
     pub name: String,
     pub status: Status,
+    pub stub: bool,
     pub deps: Vec<String>,
     pub refs: Vec<String>,
     pub contract: Option<Contract>,
@@ -93,6 +96,36 @@ pub struct SubsystemDecl {
     pub files: Vec<String>,
     pub status: Status,
     pub description: Option<String>,
+}
+
+#[derive(Debug, Clone)]
+pub struct SkimsystemDecl {
+    pub name: String,
+    pub owner: String,
+    pub targets: SkimTargets,
+    pub status: Status,
+    pub principles: Vec<String>,
+    pub description: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum SkimTargets {
+    All,
+    Named(Vec<String>),
+}
+
+#[derive(Debug, Clone)]
+pub struct SkimObservation {
+    pub skimsystem: String,
+    pub status: Status,
+    pub notes: Option<String>,
+    pub target: Option<SkimTarget>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum SkimTarget {
+    File,
+    Fn(String),
 }
 
 #[derive(Debug, Clone)]
