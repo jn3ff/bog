@@ -112,7 +112,7 @@ pub fn generate_stub(symbol: &Symbol) -> String {
 }
 
 /// Generate a minimal file header for a new .bog sidecar.
-fn generate_file_header(
+pub fn generate_file_header(
     source_path: &Path,
     root: &Path,
 ) -> String {
@@ -144,7 +144,7 @@ fn generate_file_header(
 }
 
 /// Match a source file path against repo.bog subsystem declarations to find owner/subsystem.
-fn find_subsystem_for_file(source_path: &Path, root: &Path) -> Option<(String, String)> {
+pub fn find_subsystem_for_file(source_path: &Path, root: &Path) -> Option<(String, String)> {
     let repo_bog_path = root.join("repo.bog");
     let content = std::fs::read_to_string(repo_bog_path).ok()?;
     let bog = parser::parse_bog(&content).ok()?;

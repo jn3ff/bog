@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use bogbot::ast::Annotation;
+use bogbot::ast::{Annotation, IntegrationFormat};
 use bogbot::config;
 use bogbot::health;
 use bogbot::parser;
@@ -186,6 +186,26 @@ fn test_dogfood_skimsystem_health() {
         aq.unwrap().observation_count > 0,
         "annotation-quality should have observations"
     );
+}
+
+#[test]
+fn test_dogfood_code_quality_integration() {
+    let content = std::fs::read_to_string("repo.bog").unwrap();
+    let bog = parser::parse_bog(&content).unwrap();
+    let cq = bog.annotations.iter().find_map(|a| {
+        if let Annotation::Skimsystem(sk) = a {
+            if sk.name == "code-quality" {
+                return Some(sk);
+            }
+        }
+        None
+    });
+    assert!(cq.is_some(), "should have code-quality skimsystem");
+    let cq = cq.unwrap();
+    assert_eq!(cq.integrations.len(), 1);
+    assert_eq!(cq.integrations[0].name, "clippy");
+    assert_eq!(cq.integrations[0].format, IntegrationFormat::CargoDiagnostic);
+    assert!(cq.integrations[0].command.contains("clippy"));
 }
 
 #[test]

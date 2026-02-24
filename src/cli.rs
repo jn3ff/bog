@@ -37,14 +37,18 @@ pub enum Command {
         path: Option<PathBuf>,
     },
 
-    /// Show skimsystem health and observations
+    /// Show skimsystem health, run integrations, or check principles
     Skim {
         /// Path to project root (defaults to current directory)
         path: Option<PathBuf>,
 
-        /// Show only a specific skimsystem
+        /// Target a specific skimsystem (triggers run mode)
         #[arg(long)]
         name: Option<String>,
+
+        /// Run a specific action: integration name (e.g. "clippy") or "check" for principles
+        #[arg(long)]
+        action: Option<String>,
 
         /// Show individual observations
         #[arg(short, long)]
@@ -77,9 +81,18 @@ pub fn run(cli: Cli) -> Result<(), Box<dyn std::error::Error>> {
             let root = path.unwrap_or_else(|| PathBuf::from("."));
             cmd_check(&root)
         }
-        Command::Skim { path, name, verbose } => {
+        Command::Skim {
+            path,
+            name,
+            action,
+            verbose,
+        } => {
             let root = path.unwrap_or_else(|| PathBuf::from("."));
-            cmd_skim(&root, name.as_deref(), verbose)
+            if let Some(ref name) = name {
+                cmd_skim_run(&root, name, action.as_deref())
+            } else {
+                cmd_skim(&root, None, verbose)
+            }
         }
         Command::Stub { path, list } => {
             let root = path.unwrap_or_else(|| PathBuf::from("."));
@@ -431,6 +444,108 @@ fn cmd_skim(
         }
 
         println!();
+    }
+
+    Ok(())
+}
+
+fn cmd_skim_run(
+    root: &Path,
+    name: &str,
+    action_filter: Option<&str>,
+) -> Result<(), Box<dyn std::error::Error>> {
+    use crate::integration;
+
+    // Parse repo.bog to find the target skimsystem
+    let repo_bog_path = root.join("repo.bog");
+    let content = std::fs::read_to_string(&repo_bog_path)?;
+    let bog = crate::parser::parse_bog(&content)?;
+
+    let skimsystem = bog
+        .annotations
+        .into_iter()
+        .find_map(|a| {
+            if let crate::ast::Annotation::Skimsystem(sk) = a {
+                if sk.name == name {
+                    return Some(sk);
+                }
+            }
+            None
+        })
+        .ok_or_else(|| format!("skimsystem '{name}' not found in repo.bog"))?;
+
+    // Determine which actions to run
+    let run_check = action_filter.is_none() || action_filter == Some("check");
+    let run_integrations: Vec<&crate::ast::IntegrationSpec> = if let Some(action) = action_filter {
+        if action == "check" {
+            Vec::new()
+        } else {
+            match skimsystem.integrations.iter().find(|i| i.name == action) {
+                Some(spec) => vec![spec],
+                None => {
+                    println!(
+                        "  {} integration '{}' not found in skimsystem '{}'",
+                        "error:".red(),
+                        action,
+                        name
+                    );
+                    println!(
+                        "  Available: {}",
+                        skimsystem
+                            .integrations
+                            .iter()
+                            .map(|i| i.name.as_str())
+                            .chain(std::iter::once("check"))
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    );
+                    std::process::exit(1);
+                }
+            }
+        }
+    } else {
+        skimsystem.integrations.iter().collect()
+    };
+
+    println!(
+        "{} {} {}",
+        "Running skimsystem".bold(),
+        name.bold(),
+        "...".bold()
+    );
+
+    // Run check (principles-based) pass
+    if run_check {
+        println!("\n  {} check (principles)", ">>".bold());
+        for p in &skimsystem.principles {
+            println!("    - {p}");
+        }
+        println!("    {}", "(principles listed for agent reference)".dimmed());
+    }
+
+    // Run each integration
+    for spec in &run_integrations {
+        println!("\n  {} {} integration", ">>".bold(), spec.name.bold());
+        println!("  $ {}", spec.command.dimmed());
+
+        let mut report =
+            integration::run_integration(&skimsystem.name, &spec.name, spec, root)?;
+
+        if report.build_error.is_some() {
+            integration::print_report(&report);
+            continue;
+        }
+
+        // Write results to .bog files
+        integration::write_integration_results(
+            &skimsystem.name,
+            &spec.name,
+            &skimsystem.owner,
+            &mut report,
+            root,
+        )?;
+
+        integration::print_report(&report);
     }
 
     Ok(())

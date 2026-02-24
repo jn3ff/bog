@@ -30,3 +30,22 @@
   status = green,
   description = "Serde default for tree_sitter.language field, returns rust"
 }]
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = yellow,
+  notes = "clippy: 1 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-aac4ebaf3a5b17b4",
+    from = "quality-agent",
+    target = fn(load_config),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::missing_errors_doc (line 53): docs for function returning `Result` missing `# Errors` section"
+  )]
+}]

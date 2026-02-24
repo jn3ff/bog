@@ -73,3 +73,58 @@
   deps = [extract_symbols],
   description = "Verifies Self:: and stdlib calls are filtered out"
 }]
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = yellow,
+  notes = "clippy: 5 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-c28d821d3594c0b5",
+    from = "quality-agent",
+    target = fn(extract_symbols),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::missing_errors_doc (line 31): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-b77fd2a543e2f621",
+    from = "quality-agent",
+    target = fn(collect_symbols),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::collapsible_if (line 60): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-a40e25633b557578",
+    from = "quality-agent",
+    target = fn(extract_function),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::map_unwrap_or (line 87): called `map(<f>).unwrap_or_else(<g>)` on an `Option` value"
+  )]
+  #[request(
+    id = "code-quality-clippy-843ce57a285f6f79",
+    from = "quality-agent",
+    target = fn(extract_function),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::map_unwrap_or (line 91): called `map(<f>).unwrap_or_else(<g>)` on an `Option` value"
+  )]
+  #[request(
+    id = "code-quality-clippy-be73716941ce6d0e",
+    from = "quality-agent",
+    target = fn(extract_calls),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::collapsible_if (line 124): this `if` statement can be collapsed"
+  )]
+}]

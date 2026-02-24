@@ -93,3 +93,193 @@
   status = green,
   description = "Returns true if no validation errors were found"
 }]
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = red,
+  notes = "clippy: 20 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-50e0d7585f2217bd",
+    from = "quality-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::wildcard_imports (line 4): usage of wildcard import"
+  )]
+  #[request(
+    id = "code-quality-clippy-289a5a8879bf75cf",
+    from = "quality-agent",
+    target = fn(is_ok),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::must_use_candidate (line 64): this method could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-522816905c898ec7",
+    from = "quality-agent",
+    target = fn(validate_syntax),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::missing_errors_doc (line 70): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-c457866210f4d010",
+    from = "quality-agent",
+    target = fn(validate_functions),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::must_use_candidate (line 82): this function could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-e3ac268e98bfc5ac",
+    from = "quality-agent",
+    target = fn(validate_functions),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::manual_let_else (line 89): this could be rewritten as `let...else`"
+  )]
+  #[request(
+    id = "code-quality-clippy-feabb6a229a79d45",
+    from = "quality-agent",
+    target = fn(validate_functions),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::manual_let_else (line 94): this could be rewritten as `let...else`"
+  )]
+  #[request(
+    id = "code-quality-clippy-93ad8790c0fd4760",
+    from = "quality-agent",
+    target = fn(validate_subsystem_consistency),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::must_use_candidate (line 122): this function could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-a02f2fcb714590b8",
+    from = "quality-agent",
+    target = fn(validate_subsystem_consistency),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::redundant_closure_for_method_calls (line 139): redundant closure"
+  )]
+  #[request(
+    id = "code-quality-clippy-e36384d9e04870f1",
+    from = "quality-agent",
+    target = fn(validate_subsystem_consistency),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::collapsible_if (line 183): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-72b0693b2865ec3f",
+    from = "quality-agent",
+    target = fn(validate_skimsystem_consistency),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::must_use_candidate (line 201): this function could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-62352d95d1ec5d3a",
+    from = "quality-agent",
+    target = fn(validate_skimsystem_consistency),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::redundant_closure_for_method_calls (line 223): redundant closure"
+  )]
+  #[request(
+    id = "code-quality-clippy-941ab3a93849cf33",
+    from = "quality-agent",
+    target = fn(validate_skimsystem_consistency),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::collapsible_if (line 235): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-7688758962545147",
+    from = "quality-agent",
+    target = fn(validate_skimsystem_consistency),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::collapsible_if (line 263): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-287684c236d483b1",
+    from = "quality-agent",
+    target = fn(validate_skim_targets),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::must_use_candidate (line 278): this function could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-1699fe6a24bed9ed",
+    from = "quality-agent",
+    target = fn(validate_skim_targets),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::collapsible_if (line 290): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-0de863eed5e4c0d5",
+    from = "quality-agent",
+    target = fn(validate_skim_targets),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::manual_let_else (line 303): this could be rewritten as `let...else`"
+  )]
+  #[request(
+    id = "code-quality-clippy-f1ba1986d352d3f8",
+    from = "quality-agent",
+    target = fn(validate_skim_targets),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::manual_let_else (line 308): this could be rewritten as `let...else`"
+  )]
+  #[request(
+    id = "code-quality-clippy-c9b3e4641254d59a",
+    from = "quality-agent",
+    target = fn(validate_project),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::missing_panics_doc (line 329): docs for function which may panic missing `# Panics` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-d74de3154a3d4231",
+    from = "quality-agent",
+    target = fn(validate_project),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::must_use_candidate (line 329): this function could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-92d69f2b7154d2d6",
+    from = "quality-agent",
+    target = fn(validate_project),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::map_unwrap_or (line 369): called `map(<f>).unwrap_or(false)` on an `Option` value"
+  )]
+}]

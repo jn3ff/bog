@@ -73,3 +73,121 @@
   status = yellow,
   notes = "test_coverage is yellow; CLI commands have no unit tests"
 }]
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = red,
+  notes = "clippy: 12 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-434d72ff905ee268",
+    from = "quality-agent",
+    target = fn(run),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::missing_errors_doc (line 69): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-4db8f8094f575ff0",
+    from = "quality-agent",
+    target = fn(cmd_validate),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::unnecessary_wraps (line 202): this function's return value is unnecessary"
+  )]
+  #[request(
+    id = "code-quality-clippy-233d47bcda19417f",
+    from = "quality-agent",
+    target = fn(cmd_status),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::unnecessary_wraps (line 232): this function's return value is unnecessary"
+  )]
+  #[request(
+    id = "code-quality-clippy-a6f1e6b1f8185732",
+    from = "quality-agent",
+    target = fn(cmd_check),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::unnecessary_wraps (line 250): this function's return value is unnecessary"
+  )]
+  #[request(
+    id = "code-quality-clippy-36064688e43deddf",
+    from = "quality-agent",
+    target = fn(cmd_skim),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::unnecessary_wraps (line 291): this function's return value is unnecessary"
+  )]
+  #[request(
+    id = "code-quality-clippy-73039e3ae1044f0e",
+    from = "quality-agent",
+    target = fn(cmd_skim),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::map_unwrap_or (line 410): called `map(<f>).unwrap_or(false)` on an `Option` value"
+  )]
+  #[request(
+    id = "code-quality-clippy-afcdc54635afd10d",
+    from = "quality-agent",
+    target = fn(cmd_skim),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::collapsible_if (line 414): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-0f1d0c2872b2dc6f",
+    from = "quality-agent",
+    target = fn(cmd_skim),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::collapsible_if (line 417): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-a640d259ad12bacc",
+    from = "quality-agent",
+    target = fn(cmd_skim_run),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::collapsible_if (line 468): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-69b9ffa70100c2b3",
+    from = "quality-agent",
+    target = fn(cmd_skim_run),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::single_match_else (line 483): you seem to be trying to use `match` for destructuring a single pattern. Consider using `if let`"
+  )]
+  #[request(
+    id = "code-quality-clippy-1e71cd88868dd1e2",
+    from = "quality-agent",
+    target = fn(cmd_stub),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::unnecessary_wraps (line 554): this function's return value is unnecessary"
+  )]
+  #[request(
+    id = "code-quality-clippy-af1dc247e4cbb225",
+    from = "quality-agent",
+    target = fn(cmd_stub_list),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::unnecessary_wraps (line 599): this function's return value is unnecessary"
+  )]
+}]

@@ -20,7 +20,7 @@
 
 #[subsystem(analysis) {
   owner = "analysis-agent",
-  files = ["src/treesitter.rs", "src/validator.rs", "src/health.rs", "src/stub.rs"],
+  files = ["src/treesitter.rs", "src/validator.rs", "src/health.rs", "src/stub.rs", "src/integration.rs"],
   status = green,
   description = "Tree-sitter bridge, validation logic, and health aggregation"
 }]
@@ -49,6 +49,23 @@
     "Function annotations should include descriptions"
   ],
   description = "Ensures .bog annotations are complete and informative"
+}]
+
+#[skimsystem(code-quality) {
+  owner = "quality-agent",
+  targets = all,
+  status = green,
+  integrations = {
+    clippy = {
+      command = "cargo clippy --message-format=json -- -W clippy::pedantic",
+      format = cargo_diagnostic
+    }
+  },
+  principles = [
+    "No pedantic clippy warnings should persist unaddressed",
+    "Each warning should be either fixed or explicitly allowed"
+  ],
+  description = "Runs pedantic clippy and generates change requests for subsystem owners"
 }]
 
 #[policies {

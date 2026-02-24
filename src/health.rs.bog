@@ -71,3 +71,229 @@
   status = green,
   notes = "All functions annotated with contracts and descriptions"
 }]
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = red,
+  notes = "clippy: 24 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-6441928019ed0973",
+    from = "quality-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::wildcard_imports (line 6): usage of wildcard import"
+  )]
+  #[request(
+    id = "code-quality-clippy-b9e662540dbb975c",
+    from = "quality-agent",
+    target = fn(overall),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::must_use_candidate (line 35): this method could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-fc1e674c5e0f12df",
+    from = "quality-agent",
+    target = fn(total),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::must_use_candidate (line 45): this method could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-18a07a0619197131",
+    from = "quality-agent",
+    target = fn(overall_status),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::must_use_candidate (line 68): this method could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-31df215dc59abbc5",
+    from = "quality-agent",
+    target = fn(compute_health),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::must_use_candidate (line 89): this function could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-33fbd9eae8c4ce99",
+    from = "quality-agent",
+    target = fn(compute_health),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::collapsible_if (line 96): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-704b60b99ae1166a",
+    from = "quality-agent",
+    target = fn(compute_health),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::assigning_clones (line 100): assigning the result of `Clone::clone()` may be inefficient"
+  )]
+  #[request(
+    id = "code-quality-clippy-3f671e30ee65867e",
+    from = "quality-agent",
+    target = fn(compute_health),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::collapsible_if (line 136): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-c639da927ad85c3b",
+    from = "quality-agent",
+    target = fn(compute_health),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::collapsible_if (line 137): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-dbabdc22271fe933",
+    from = "quality-agent",
+    target = fn(compute_health),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::redundant_closure_for_method_calls (line 166): redundant closure"
+  )]
+  #[request(
+    id = "code-quality-clippy-421894c792cf121d",
+    from = "quality-agent",
+    target = fn(compute_health),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::redundant_closure_for_method_calls (line 167): redundant closure"
+  )]
+  #[request(
+    id = "code-quality-clippy-9c312df40a974e6a",
+    from = "quality-agent",
+    target = fn(compute_health),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::inefficient_to_string (line 173): calling `to_string` on `&&str`"
+  )]
+  #[request(
+    id = "code-quality-clippy-22433ea4e8af69bd",
+    from = "quality-agent",
+    target = fn(compute_health),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::collapsible_if (line 181): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-26013313ad412dd2",
+    from = "quality-agent",
+    target = fn(format_health_report),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::must_use_candidate (line 227): this function could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-a5af9f12c761e4cd",
+    from = "quality-agent",
+    target = fn(format_health_report),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::format_push_string (line 230): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-4004b8cc904c9e6a",
+    from = "quality-agent",
+    target = fn(format_health_report),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::format_push_string (line 235): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-f8d7fb9b627bee88",
+    from = "quality-agent",
+    target = fn(format_health_report),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::format_push_string (line 246): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-455ab4cd64e8a5d6",
+    from = "quality-agent",
+    target = fn(format_health_report),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::format_push_string (line 252): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-42914a7b0b3454ef",
+    from = "quality-agent",
+    target = fn(format_health_report),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::format_push_string (line 255): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-6ab09fc1ba4b68d8",
+    from = "quality-agent",
+    target = fn(format_health_report),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::format_push_string (line 265): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-aa5d50fa7df2a3dc",
+    from = "quality-agent",
+    target = fn(format_health_report),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::format_push_string (line 277): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-c2ba5f9abe1df509",
+    from = "quality-agent",
+    target = fn(format_health_report),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::format_push_string (line 280): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-2a29e2ff33362836",
+    from = "quality-agent",
+    target = fn(format_health_report),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::format_push_string (line 288): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-6bcfc11122a72fea",
+    from = "quality-agent",
+    target = fn(format_health_report),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-24",
+    description = "clippy::format_push_string (line 301): `format!(..)` appended to existing `String`"
+  )]
+}]

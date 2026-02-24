@@ -105,7 +105,20 @@ pub struct SkimsystemDecl {
     pub targets: SkimTargets,
     pub status: Status,
     pub principles: Vec<String>,
+    pub integrations: Vec<IntegrationSpec>,
     pub description: Option<String>,
+}
+
+#[derive(Debug, Clone)]
+pub struct IntegrationSpec {
+    pub name: String,
+    pub command: String,
+    pub format: IntegrationFormat,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum IntegrationFormat {
+    CargoDiagnostic,
 }
 
 #[derive(Debug, Clone, PartialEq)]

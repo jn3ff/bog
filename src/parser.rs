@@ -453,12 +453,56 @@ fn parse_skimsystem(mut pairs: Pairs<Rule>) -> Result<Annotation, ParseError> {
         _ => SkimTargets::All,
     };
 
+    let integrations = if let Some(Value::Block(block_pairs)) = map.get("integrations") {
+        let mut specs = Vec::new();
+        for (int_name, int_val) in block_pairs {
+            if let Value::Block(inner_pairs) = int_val {
+                let inner_map: HashMap<String, Value> = inner_pairs.iter().cloned().collect();
+                let command = match inner_map.get("command") {
+                    Some(Value::String(s)) => unquote(s),
+                    _ => {
+                        return Err(ParseError::MissingField {
+                            context: format!("skimsystem integration '{int_name}'"),
+                            field: "command".to_string(),
+                        })
+                    }
+                };
+                let format = match inner_map.get("format") {
+                    Some(Value::Ident(s)) if s == "cargo_diagnostic" => {
+                        IntegrationFormat::CargoDiagnostic
+                    }
+                    Some(other) => {
+                        return Err(ParseError::InvalidValue {
+                            field: "format".to_string(),
+                            message: format!("unknown integration format: {other:?}"),
+                        })
+                    }
+                    None => {
+                        return Err(ParseError::MissingField {
+                            context: format!("skimsystem integration '{int_name}'"),
+                            field: "format".to_string(),
+                        })
+                    }
+                };
+                specs.push(IntegrationSpec {
+                    name: int_name.clone(),
+                    command,
+                    format,
+                });
+            }
+        }
+        specs
+    } else {
+        Vec::new()
+    };
+
     Ok(Annotation::Skimsystem(SkimsystemDecl {
         name,
         owner: require_string(&map, "owner", "skimsystem")?,
         targets,
         status: require_status(&map, "status", "skimsystem")?,
         principles: extract_string_list(&map, "principles"),
+        integrations,
         description: opt_string(&map, "description"),
     }))
 }
@@ -838,6 +882,36 @@ mod tests {
             Annotation::Skimsystem(s) => {
                 assert_eq!(s.targets, SkimTargets::All);
                 assert!(s.principles.is_empty());
+            }
+            _ => panic!("expected Skimsystem annotation"),
+        }
+    }
+
+    #[test]
+    fn test_parse_skimsystem_with_integrations() {
+        let input = r#"
+#[skimsystem(code-quality) {
+  owner = "quality-agent",
+  targets = all,
+  status = green,
+  integrations = {
+    clippy = {
+      command = "cargo clippy --message-format=json -- -W clippy::pedantic",
+      format = cargo_diagnostic
+    }
+  },
+  principles = ["No pedantic clippy warnings"],
+  description = "Runs pedantic clippy"
+}]
+"#;
+        let bog = parse_bog(input).unwrap();
+        match &bog.annotations[0] {
+            Annotation::Skimsystem(s) => {
+                assert_eq!(s.name, "code-quality");
+                assert_eq!(s.integrations.len(), 1);
+                assert_eq!(s.integrations[0].name, "clippy");
+                assert!(s.integrations[0].command.contains("clippy"));
+                assert_eq!(s.integrations[0].format, IntegrationFormat::CargoDiagnostic);
             }
             _ => panic!("expected Skimsystem annotation"),
         }
