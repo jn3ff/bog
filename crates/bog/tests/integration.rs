@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use bog::ast::{Annotation, IntegrationFormat};
 use bog::config;
@@ -7,11 +7,22 @@ use bog::parser;
 use bog::treesitter;
 use bog::validator;
 
+/// Resolve the workspace root from CARGO_MANIFEST_DIR (which is crates/bog/).
+fn workspace_root() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .to_path_buf()
+}
+
 // --- Config ---
 
 #[test]
 fn test_config_loading() {
-    let config = config::load_config(Path::new("bog.toml")).unwrap();
+    let root = workspace_root();
+    let config = config::load_config(&root.join("bog.toml")).unwrap();
     assert_eq!(config.bog.version, "0.1.0");
     assert!(config.agents.contains_key("core-agent"));
     assert!(config.agents.contains_key("analysis-agent"));
@@ -25,7 +36,8 @@ fn test_config_loading() {
 
 #[test]
 fn test_repo_bog_parsing() {
-    let content = std::fs::read_to_string("repo.bog").unwrap();
+    let root = workspace_root();
+    let content = std::fs::read_to_string(root.join("repo.bog")).unwrap();
     let bog = parser::parse_bog(&content).unwrap();
     // repo, description, 4 subsystems, 1 skimsystem, policies
     assert!(bog.annotations.len() >= 8);
@@ -33,7 +45,8 @@ fn test_repo_bog_parsing() {
 
 #[test]
 fn test_file_bog_parsing() {
-    let content = std::fs::read_to_string("src/parser.rs.bog").unwrap();
+    let root = workspace_root();
+    let content = std::fs::read_to_string(root.join("crates/bog/src/parser.rs.bog")).unwrap();
     let bog = parser::parse_bog(&content).unwrap();
     // file, description, health, plus many fn annotations
     assert!(bog.annotations.len() >= 4);
@@ -41,7 +54,8 @@ fn test_file_bog_parsing() {
 
 #[test]
 fn test_fixture_bog_parsing() {
-    let content = std::fs::read_to_string("tests/fixtures/src/auth.rs.bog").unwrap();
+    let root = workspace_root();
+    let content = std::fs::read_to_string(root.join("crates/bog/tests/fixtures/src/auth.rs.bog")).unwrap();
     let bog = parser::parse_bog(&content).unwrap();
     // file, description, health, fn(login), fn(logout)
     assert_eq!(bog.annotations.len(), 5);
@@ -51,7 +65,8 @@ fn test_fixture_bog_parsing() {
 
 #[test]
 fn test_treesitter_validates_functions() {
-    let source = std::fs::read_to_string("tests/fixtures/src/auth.rs").unwrap();
+    let root = workspace_root();
+    let source = std::fs::read_to_string(root.join("crates/bog/tests/fixtures/src/auth.rs")).unwrap();
     let symbols = treesitter::extract_symbols(&source).unwrap();
     let names: Vec<&str> = symbols.iter().map(|s| s.name.as_str()).collect();
     assert!(names.contains(&"login"));
@@ -62,10 +77,11 @@ fn test_treesitter_validates_functions() {
 
 #[test]
 fn test_validate_functions_match() {
-    let bog_path = Path::new("tests/fixtures/src/auth.rs.bog");
-    let source_path = Path::new("tests/fixtures/src/auth.rs");
-    let bog = validator::validate_syntax(bog_path).unwrap();
-    let errors = validator::validate_functions(bog_path, &bog, source_path);
+    let root = workspace_root();
+    let bog_path = root.join("crates/bog/tests/fixtures/src/auth.rs.bog");
+    let source_path = root.join("crates/bog/tests/fixtures/src/auth.rs");
+    let bog = validator::validate_syntax(&bog_path).unwrap();
+    let errors = validator::validate_functions(&bog_path, &bog, &source_path);
     assert!(errors.is_empty(), "Expected no errors, got: {errors:?}");
 }
 
@@ -84,9 +100,10 @@ fn test_validate_functions_catches_mismatch() {
 }]
 "#;
     let bog = parser::parse_bog(input).unwrap();
-    let source_path = Path::new("tests/fixtures/src/auth.rs");
-    let bog_path = Path::new("test.rs.bog");
-    let errors = validator::validate_functions(bog_path, &bog, source_path);
+    let root = workspace_root();
+    let source_path = root.join("crates/bog/tests/fixtures/src/auth.rs");
+    let bog_path = root.join("test.rs.bog");
+    let errors = validator::validate_functions(&bog_path, &bog, &source_path);
     assert_eq!(errors.len(), 1);
     match &errors[0] {
         validator::ValidationError::MissingFunction { function, .. } => {
@@ -100,7 +117,8 @@ fn test_validate_functions_catches_mismatch() {
 
 #[test]
 fn test_dogfood_validate() {
-    let report = validator::validate_project(Path::new("."));
+    let root = workspace_root();
+    let report = validator::validate_project(&root);
     for e in &report.errors {
         eprintln!("  dogfood error: {e}");
     }
@@ -120,7 +138,8 @@ fn test_dogfood_validate() {
 
 #[test]
 fn test_dogfood_health() {
-    let health = health::compute_health(Path::new("."));
+    let root = workspace_root();
+    let health = health::compute_health(&root);
     assert_eq!(health.name, "bog");
     assert_eq!(health.subsystems.len(), 4);
 
@@ -137,7 +156,8 @@ fn test_dogfood_health() {
 
 #[test]
 fn test_dogfood_skimsystem_declared() {
-    let content = std::fs::read_to_string("repo.bog").unwrap();
+    let root = workspace_root();
+    let content = std::fs::read_to_string(root.join("repo.bog")).unwrap();
     let bog = parser::parse_bog(&content).unwrap();
     let skimsystems: Vec<_> = bog
         .annotations
@@ -152,7 +172,8 @@ fn test_dogfood_skimsystem_declared() {
 
 #[test]
 fn test_dogfood_skim_observations_valid() {
-    let report = validator::validate_project(Path::new("."));
+    let root = workspace_root();
+    let report = validator::validate_project(&root);
     let skim_errors: Vec<_> = report
         .errors
         .iter()
@@ -172,7 +193,8 @@ fn test_dogfood_skim_observations_valid() {
 
 #[test]
 fn test_dogfood_skimsystem_health() {
-    let health = health::compute_health(Path::new("."));
+    let root = workspace_root();
+    let health = health::compute_health(&root);
     assert!(
         !health.skimsystems.is_empty(),
         "should have skimsystem health"
@@ -190,7 +212,8 @@ fn test_dogfood_skimsystem_health() {
 
 #[test]
 fn test_dogfood_code_quality_integration() {
-    let content = std::fs::read_to_string("repo.bog").unwrap();
+    let root = workspace_root();
+    let content = std::fs::read_to_string(root.join("repo.bog")).unwrap();
     let bog = parser::parse_bog(&content).unwrap();
     let cq = bog.annotations.iter().find_map(|a| {
         if let Annotation::Skimsystem(sk) = a {
@@ -210,7 +233,8 @@ fn test_dogfood_code_quality_integration() {
 
 #[test]
 fn test_dogfood_every_subsystem_has_files() {
-    let health = health::compute_health(Path::new("."));
+    let root = workspace_root();
+    let health = health::compute_health(&root);
     for sub in &health.subsystems {
         assert!(
             sub.file_count > 0,

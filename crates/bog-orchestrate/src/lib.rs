@@ -1,0 +1,10 @@
+pub mod agent;
+pub mod context;
+pub mod dock;
+pub mod error;
+pub mod orchestrator;
+pub mod permissions;
+pub mod plan;
+pub mod prompt;
+pub mod provider;
+pub mod worktree;

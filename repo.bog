@@ -13,28 +13,28 @@
 
 #[subsystem(core) {
   owner = "core-agent",
-  files = ["src/ast.rs", "src/parser.rs", "src/config.rs", "src/lib.rs"],
+  files = ["crates/bog/src/ast.rs", "crates/bog/src/parser.rs", "crates/bog/src/config.rs", "crates/bog/src/lib.rs"],
   status = green,
   description = "Data model, .bog parser (pest), and config loading"
 }]
 
 #[subsystem(analysis) {
   owner = "analysis-agent",
-  files = ["src/treesitter.rs", "src/validator.rs", "src/health.rs", "src/stub.rs", "src/integration.rs"],
+  files = ["crates/bog/src/treesitter.rs", "crates/bog/src/validator.rs", "crates/bog/src/health.rs", "crates/bog/src/stub.rs", "crates/bog/src/integration.rs"],
   status = green,
   description = "Tree-sitter bridge, validation logic, and health aggregation"
 }]
 
 #[subsystem(cli) {
   owner = "cli-agent",
-  files = ["src/cli.rs", "src/main.rs"],
+  files = ["crates/bog/src/cli.rs", "crates/bog/src/main.rs"],
   status = green,
   description = "CLI commands and entry point"
 }]
 
 #[subsystem(test-fixtures) {
   owner = "analysis-agent",
-  files = ["tests/fixtures/src/auth.rs", "tests/integration.rs"],
+  files = ["crates/bog/tests/fixtures/src/auth.rs", "crates/bog/tests/integration.rs"],
   status = green,
   description = "Test fixture source files used by integration tests"
 }]
