@@ -32,6 +32,13 @@
 }]
 
 
+
+
+#[skim(tracing) {
+  status = red,
+  notes = "No tracing instrumentation. load_config needs INFO on successful load (path, agent count), WARN if config file missing or malformed, TRACE in default_language."
+}]
+
 // [integration:code-quality:clippy]
 #[skim(code-quality) {
   status = yellow,
@@ -40,12 +47,12 @@
 
 #[change_requests {
   #[request(
-    id = "code-quality-clippy-aac4ebaf3a5b17b4",
-    from = "quality-agent",
+    id = "code-quality-clippy-3fe337f6d100188f",
+    from = "code-standards-agent",
     target = fn(load_config),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::missing_errors_doc (line 53): docs for function returning `Result` missing `# Errors` section"
   )]
 }]

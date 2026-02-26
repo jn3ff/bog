@@ -1,0 +1,85 @@
+#[file(
+  owner = "orchestrate-agent",
+  subsystem = "orchestrate",
+  updated = "2026-02-25",
+  status = green
+)]
+
+#[description {
+  Skim lifecycle orchestration. Runs bog skim CLI integration to generate
+  change_requests, collects pending requests per subsystem, delegates them
+  to subsystem agents in worktrees, then merges or rejects.
+}]
+
+#[health(
+  test_coverage = green,
+  staleness = green,
+  complexity = yellow,
+  contract_compliance = green
+)]
+
+#[fn(run_skim_lifecycle) {
+  status = green,
+  deps = [run_bog_skim, collect_pending_requests, build_subsystem_task_from_requests, agent::execute_agent_task],
+  contract = {
+    in = [(ctx, RepoContext), (skimsystem_name, str), (action, Option), (provider, Provider)],
+    out = "Result<SkimRunResult, OrchestrateError>"
+  },
+  description = "Full skim lifecycle: run integration, collect requests, delegate to agents, merge or reject"
+}]
+
+#[fn(run_bog_skim) {
+  status = green,
+  description = "Shells out to cargo run -p bog -- skim with the named skimsystem and optional action"
+}]
+
+#[fn(collect_pending_requests) {
+  status = green,
+  deps = [parser::parse_bog, pathdiff],
+  contract = {
+    in = [(ctx, RepoContext), (skimsystem_name, str)],
+    out = "Result<Vec<SubsystemWorkPacket>, OrchestrateError>"
+  },
+  description = "Globs .bog files, finds pending change_requests from skimsystem owner, groups by subsystem"
+}]
+
+#[fn(build_subsystem_task_from_requests) {
+  status = green,
+  contract = {
+    in = [(wp, SubsystemWorkPacket)],
+    out = "AgentTask"
+  },
+  description = "Builds agent task instruction listing pending request IDs and descriptions"
+}]
+
+#[fn(pathdiff) {
+  status = green,
+  description = "Strips base prefix from a path to produce a relative path string"
+}]
+
+#[fn(load_ctx) {
+  status = green,
+  description = "Test helper: loads RepoContext from workspace root"
+}]
+
+#[fn(test_collect_pending_requests) {
+  status = green,
+  deps = [collect_pending_requests, load_ctx],
+  description = "Verifies collected packets have valid structure with pending status"
+}]
+
+#[fn(test_build_task_from_requests) {
+  status = green,
+  deps = [build_subsystem_task_from_requests],
+  description = "Verifies task instruction contains source file and description text"
+}]
+
+#[skim(tracing) {
+  status = red,
+  notes = "No tracing instrumentation. run_skim_lifecycle needs INFO at each phase. collect_pending_requests needs DEBUG with request counts. run_bog_skim needs INFO with command run."
+}]
+
+#[skim(annotation-quality) {
+  status = green,
+  notes = "All functions annotated with contracts and descriptions"
+}]

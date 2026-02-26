@@ -7,4 +7,5 @@ pub mod permissions;
 pub mod plan;
 pub mod prompt;
 pub mod provider;
+pub mod skim;
 pub mod worktree;

@@ -55,6 +55,7 @@ fn parse_annotation(pair: Pair<Rule>) -> Result<Annotation, ParseError> {
         "skim" => parse_skim(inner),
         "policies" => parse_policies(inner),
         "change_requests" => parse_change_requests(inner),
+        "pickled" => parse_pickled(inner),
         other => Err(ParseError::UnknownAnnotation(other.to_string())),
     }
 }
@@ -566,6 +567,65 @@ fn parse_change_requests(mut pairs: Pairs<Rule>) -> Result<Annotation, ParseErro
     Ok(Annotation::ChangeRequests(requests))
 }
 
+fn parse_pickled(mut pairs: Pairs<Rule>) -> Result<Annotation, ParseError> {
+    let parens_map = get_kv_list_from_parens(&mut pairs)?;
+    let agent = require_string(&parens_map, "agent", "pickled")?;
+    let updated = require_string(&parens_map, "updated", "pickled")?;
+
+    let body_map = get_body_kv_map(&mut pairs)?;
+    let id = require_string(&body_map, "id", "pickled")?;
+    let kind = match body_map.get("kind") {
+        Some(Value::Ident(s)) => match s.as_str() {
+            "decision" => PickledKind::Decision,
+            "reversal" => PickledKind::Reversal,
+            "context" => PickledKind::Context,
+            "observation" => PickledKind::Observation,
+            "rationale" => PickledKind::Rationale,
+            other => return Err(ParseError::InvalidValue {
+                field: "kind".to_string(),
+                message: format!("unknown pickled kind: {other}"),
+            }),
+        },
+        _ => return Err(ParseError::MissingField {
+            context: "pickled".to_string(),
+            field: "kind".to_string(),
+        }),
+    };
+    let supersedes = opt_string(&body_map, "supersedes");
+    let tags = extract_string_list(&body_map, "tags")
+        .iter()
+        .map(|s| parse_pickled_tag(s))
+        .collect::<Result<Vec<_>, _>>()?;
+    let content = require_string(&body_map, "content", "pickled")?;
+
+    Ok(Annotation::Pickled(PickledAnnotation {
+        id,
+        agent,
+        updated,
+        kind,
+        supersedes,
+        tags,
+        content,
+    }))
+}
+
+fn parse_pickled_tag(s: &str) -> Result<PickledTag, ParseError> {
+    match s {
+        "architecture" => Ok(PickledTag::Architecture),
+        "performance" => Ok(PickledTag::Performance),
+        "reliability" => Ok(PickledTag::Reliability),
+        "security" => Ok(PickledTag::Security),
+        "testing" => Ok(PickledTag::Testing),
+        "domain" => Ok(PickledTag::Domain),
+        "debt" => Ok(PickledTag::Debt),
+        "tooling" => Ok(PickledTag::Tooling),
+        other => Err(ParseError::InvalidValue {
+            field: "tags".to_string(),
+            message: format!("unknown pickled tag: {other}"),
+        }),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -961,6 +1021,110 @@ mod tests {
                 assert_eq!(obs.status, Status::Red);
             }
             _ => panic!("expected Skim annotation"),
+        }
+    }
+
+    #[test]
+    fn test_parse_pickled_decision() {
+        let input = r#"
+#[pickled(agent = "core-agent", updated = "2026-02-24") {
+  id = "pickle-001",
+  kind = decision,
+  tags = [architecture, reliability],
+  content = "Keep single PEG grammar rather than splitting per annotation type. Splitting looked cleaner but made error recovery much harder."
+}]
+"#;
+        let bog = parse_bog(input).unwrap();
+        assert_eq!(bog.annotations.len(), 1);
+        match &bog.annotations[0] {
+            Annotation::Pickled(p) => {
+                assert_eq!(p.id, "pickle-001");
+                assert_eq!(p.agent, "core-agent");
+                assert_eq!(p.updated, "2026-02-24");
+                assert_eq!(p.kind, PickledKind::Decision);
+                assert_eq!(p.supersedes, None);
+                assert_eq!(p.tags, vec![PickledTag::Architecture, PickledTag::Reliability]);
+                assert!(p.content.contains("single PEG grammar"));
+            }
+            _ => panic!("expected Pickled annotation"),
+        }
+    }
+
+    #[test]
+    fn test_parse_pickled_reversal() {
+        let input = r#"
+#[pickled(agent = "core-agent", updated = "2026-02-26") {
+  id = "pickle-003",
+  kind = reversal,
+  supersedes = "pickle-002",
+  tags = [architecture],
+  content = "Reverting nested grammar experiment. Error messages became useless."
+}]
+"#;
+        let bog = parse_bog(input).unwrap();
+        match &bog.annotations[0] {
+            Annotation::Pickled(p) => {
+                assert_eq!(p.kind, PickledKind::Reversal);
+                assert_eq!(p.supersedes, Some("pickle-002".to_string()));
+            }
+            _ => panic!("expected Pickled annotation"),
+        }
+    }
+
+    #[test]
+    fn test_parse_pickled_context() {
+        let input = r#"
+#[pickled(agent = "analysis-agent", updated = "2026-02-25") {
+  id = "pickle-010",
+  kind = context,
+  tags = [domain],
+  content = "Tree-sitter queries for Rust impl blocks need special handling — methods inside impl are function_item nodes nested under impl_item."
+}]
+"#;
+        let bog = parse_bog(input).unwrap();
+        match &bog.annotations[0] {
+            Annotation::Pickled(p) => {
+                assert_eq!(p.kind, PickledKind::Context);
+                assert_eq!(p.tags, vec![PickledTag::Domain]);
+                assert!(p.content.contains("impl blocks"));
+            }
+            _ => panic!("expected Pickled annotation"),
+        }
+    }
+
+    #[test]
+    fn test_parse_multiple_pickled() {
+        let input = r#"
+#[pickled(agent = "core-agent", updated = "2026-02-20") {
+  id = "pickle-001",
+  kind = observation,
+  tags = [architecture],
+  content = "parser.pest uses a single annotation rule for all types — dispatch happens in Rust."
+}]
+
+#[pickled(agent = "core-agent", updated = "2026-02-24") {
+  id = "pickle-002",
+  kind = decision,
+  tags = [architecture, debt],
+  content = "Contract parsing uses nested blocks. Accepted complexity tradeoff for expressiveness."
+}]
+"#;
+        let bog = parse_bog(input).unwrap();
+        assert_eq!(bog.annotations.len(), 2);
+        match &bog.annotations[0] {
+            Annotation::Pickled(p) => {
+                assert_eq!(p.id, "pickle-001");
+                assert_eq!(p.kind, PickledKind::Observation);
+            }
+            _ => panic!("expected Pickled annotation"),
+        }
+        match &bog.annotations[1] {
+            Annotation::Pickled(p) => {
+                assert_eq!(p.id, "pickle-002");
+                assert_eq!(p.kind, PickledKind::Decision);
+                assert_eq!(p.tags, vec![PickledTag::Architecture, PickledTag::Debt]);
+            }
+            _ => panic!("expected Pickled annotation"),
         }
     }
 

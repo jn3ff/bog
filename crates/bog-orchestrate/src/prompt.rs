@@ -238,7 +238,8 @@ mod tests {
         assert!(prompt.contains("core-agent"));
         assert!(prompt.contains("analysis-agent"));
         assert!(prompt.contains("cli-agent"));
-        assert!(prompt.contains("quality-agent"));
+        assert!(prompt.contains("code-standards-agent"));
+        assert!(prompt.contains("observability-agent"));
     }
 
     #[test]
@@ -270,12 +271,12 @@ mod tests {
     fn test_skimsystem_prompt_contains_principles() {
         let ctx = load_ctx();
         let task = AgentTask {
-            agent: "quality-agent".to_string(),
+            agent: "code-standards-agent".to_string(),
             instruction: "Review annotation quality".to_string(),
             focus_files: vec![],
             depends_on: vec![],
         };
-        let prompt = build_skimsystem_agent_prompt(&ctx, "quality-agent", &task);
+        let prompt = build_skimsystem_agent_prompt(&ctx, "code-standards-agent", &task);
         assert!(prompt.contains("ONLY modify *.bog"));
         assert!(prompt.contains("NEVER modify source files"));
         assert!(prompt.contains("change_requests"));

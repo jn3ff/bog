@@ -171,7 +171,11 @@ mod tests {
         let ctx = RepoContext::load(&root).unwrap();
         assert_eq!(ctx.agent_role("core-agent"), Some(AgentRole::Subsystem));
         assert_eq!(
-            ctx.agent_role("quality-agent"),
+            ctx.agent_role("code-standards-agent"),
+            Some(AgentRole::Skimsystem)
+        );
+        assert_eq!(
+            ctx.agent_role("observability-agent"),
             Some(AgentRole::Skimsystem)
         );
         assert_eq!(ctx.agent_role("nonexistent"), None);

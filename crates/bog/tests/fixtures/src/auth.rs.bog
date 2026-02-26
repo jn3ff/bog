@@ -15,6 +15,11 @@
   complexity = green
 )]
 
+#[skim(tracing) {
+  status = green,
+  notes = "Test fixture only; not production code"
+}]
+
 #[fn(login) {
   status = green,
   deps = [db::get_user],

@@ -202,6 +202,13 @@
 }]
 
 
+
+
+#[skim(tracing) {
+  status = red,
+  notes = "No tracing instrumentation. parse_bog needs DEBUG with input length and annotation count. parse_annotation needs TRACE per annotation dispatched. Helper fns need TRACE."
+}]
+
 // [integration:code-quality:clippy]
 #[skim(code-quality) {
   status = red,
@@ -210,192 +217,234 @@
 
 #[change_requests {
   #[request(
-    id = "code-quality-clippy-d6e0a8f34846c459",
-    from = "quality-agent",
+    id = "code-quality-clippy-e1069ffaf3ee892d",
+    from = "code-standards-agent",
     target = file,
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::wildcard_imports (line 7): usage of wildcard import"
   )]
   #[request(
-    id = "code-quality-clippy-7ef584fc18abf745",
-    from = "quality-agent",
+    id = "code-quality-clippy-dd8d53398390349a",
+    from = "code-standards-agent",
     target = fn(parse_bog),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::missing_panics_doc (line 28): docs for function which may panic missing `# Panics` section"
   )]
   #[request(
-    id = "code-quality-clippy-5cb13b9422a9b4a4",
-    from = "quality-agent",
+    id = "code-quality-clippy-3cbcdb056d2479be",
+    from = "code-standards-agent",
     target = fn(parse_bog),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::missing_errors_doc (line 28): docs for function returning `Result` missing `# Errors` section"
   )]
   #[request(
-    id = "code-quality-clippy-af89766d776d269e",
-    from = "quality-agent",
+    id = "code-quality-clippy-d4e70295adebef3d",
+    from = "code-standards-agent",
     target = fn(get_kv_list_from_parens),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::collapsible_if (line 78): this `if` statement can be collapsed"
   )]
   #[request(
-    id = "code-quality-clippy-47ba71ae6fa79414",
-    from = "quality-agent",
+    id = "code-quality-clippy-69ae3e25f6bdc37f",
+    from = "code-standards-agent",
     target = fn(get_ident_from_parens),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::collapsible_if (line 93): this `if` statement can be collapsed"
   )]
   #[request(
-    id = "code-quality-clippy-c60e32ebe4f9b55c",
-    from = "quality-agent",
+    id = "code-quality-clippy-fa842aeec4ca0732",
+    from = "code-standards-agent",
     target = fn(get_body_kv_map),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::collapsible_if (line 108): this `if` statement can be collapsed"
   )]
   #[request(
-    id = "code-quality-clippy-0156a2de0c17959e",
-    from = "quality-agent",
+    id = "code-quality-clippy-e6a18f864db41754",
+    from = "code-standards-agent",
     target = fn(get_body_kv_map),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::collapsible_if (line 109): this `if` statement can be collapsed"
   )]
   #[request(
-    id = "code-quality-clippy-3108813197557451",
-    from = "quality-agent",
+    id = "code-quality-clippy-4dd38fd4f2687223",
+    from = "code-standards-agent",
     target = fn(get_body_kv_map),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::collapsible_if (line 110): this `if` statement can be collapsed"
   )]
   #[request(
-    id = "code-quality-clippy-08e9b69af0c9d18e",
-    from = "quality-agent",
+    id = "code-quality-clippy-d63882acb9d33bfd",
+    from = "code-standards-agent",
     target = fn(get_body_text),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::collapsible_if (line 125): this `if` statement can be collapsed"
   )]
   #[request(
-    id = "code-quality-clippy-d2700081270a0a43",
-    from = "quality-agent",
+    id = "code-quality-clippy-85129b0db4992fb6",
+    from = "code-standards-agent",
     target = fn(get_body_text),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::collapsible_if (line 126): this `if` statement can be collapsed"
   )]
   #[request(
-    id = "code-quality-clippy-a4067d242302986e",
-    from = "quality-agent",
+    id = "code-quality-clippy-07eb133e48b9bfe0",
+    from = "code-standards-agent",
     target = fn(parse_value),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::match_same_arms (line 258): these match arms have identical bodies"
   )]
   #[request(
-    id = "code-quality-clippy-5804a1025a47b478",
-    from = "quality-agent",
+    id = "code-quality-clippy-25da9bd3edb70183",
+    from = "code-standards-agent",
     target = fn(parse_value),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::redundant_closure_for_method_calls (line 225): redundant closure"
   )]
   #[request(
-    id = "code-quality-clippy-34491d2bdf4a67db",
-    from = "quality-agent",
+    id = "code-quality-clippy-57a5cf71f9317a65",
+    from = "code-standards-agent",
     target = fn(parse_value),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::match_same_arms (line 247): these match arms have identical bodies"
   )]
   #[request(
-    id = "code-quality-clippy-279fd8fb44980cf9",
-    from = "quality-agent",
+    id = "code-quality-clippy-b55f120acb3e0b7f",
+    from = "code-standards-agent",
     target = fn(parse_list_item_value),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::match_same_arms (line 305): these match arms have identical bodies"
   )]
   #[request(
-    id = "code-quality-clippy-b7766d79f3f1868a",
-    from = "quality-agent",
+    id = "code-quality-clippy-9b8ca2dae7463570",
+    from = "code-standards-agent",
     target = fn(parse_list_item_value),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::redundant_closure_for_method_calls (line 287): redundant closure"
   )]
   #[request(
-    id = "code-quality-clippy-8d764da891683bb7",
-    from = "quality-agent",
+    id = "code-quality-clippy-e2e39a5cba27d45c",
+    from = "code-standards-agent",
     target = fn(parse_list_item_value),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::match_same_arms (line 299): these match arms have identical bodies"
   )]
   #[request(
-    id = "code-quality-clippy-e2fa70f25e575d5f",
-    from = "quality-agent",
+    id = "code-quality-clippy-f290c3b9f22f0da3",
+    from = "code-standards-agent",
     target = fn(parse_description),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::unnecessary_wraps (line 330): this function's return value is unnecessarily wrapped by `Result`"
   )]
   #[request(
-    id = "code-quality-clippy-4373878d87f4ab8a",
-    from = "quality-agent",
+    id = "code-quality-clippy-86a323b53b7605bf",
+    from = "code-standards-agent",
     target = fn(parse_fn),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::collapsible_if (line 360): this `if` statement can be collapsed"
   )]
   #[request(
-    id = "code-quality-clippy-5846cd7ff1fd0bfe",
-    from = "quality-agent",
+    id = "code-quality-clippy-24f9bd6a9c80dd21",
+    from = "code-standards-agent",
     target = fn(parse_change_requests),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::collapsible_if (line 539): this `if` statement can be collapsed"
   )]
   #[request(
-    id = "code-quality-clippy-c48349e28fab6e58",
-    from = "quality-agent",
+    id = "code-quality-clippy-f51029d8a84ef47b",
+    from = "code-standards-agent",
     target = fn(parse_change_requests),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::collapsible_if (line 540): this `if` statement can be collapsed"
   )]
   #[request(
-    id = "code-quality-clippy-f7e460912ea777e6",
-    from = "quality-agent",
+    id = "code-quality-clippy-74e5cef8b45378dd",
+    from = "code-standards-agent",
     target = fn(parse_change_requests),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::collapsible_if (line 541): this `if` statement can be collapsed"
   )]
+}]
+
+#[fn(parse_skimsystem) {
+  status = green,
+  deps = [get_body_kv_map, get_ident_from_parens, extract_string_list, require_status, require_string, opt_string],
+  description = "Parses #[skimsystem(name) { ... }] into SkimsystemDecl with targets, principles, and integrations"
+}]
+
+#[fn(parse_skim) {
+  status = green,
+  deps = [get_body_kv_map, get_ident_from_parens, require_status, opt_string],
+  description = "Parses #[skim(name) { ... }] observation into SkimObservation with optional fn target"
+}]
+
+#[fn(test_parse_skimsystem) {
+  status = green,
+  deps = [parse_bog],
+  description = "Verifies parsing of #[skimsystem(name) { ... }] with named targets and principles"
+}]
+
+#[fn(test_parse_skimsystem_targets_all) {
+  status = green,
+  deps = [parse_bog],
+  description = "Verifies parsing of skimsystem with targets = all"
+}]
+
+#[fn(test_parse_skimsystem_with_integrations) {
+  status = green,
+  deps = [parse_bog],
+  description = "Verifies parsing of skimsystem with integrations block"
+}]
+
+#[fn(test_parse_skim_observation) {
+  status = green,
+  deps = [parse_bog],
+  description = "Verifies parsing of #[skim(name) { ... }] observation"
+}]
+
+#[fn(test_parse_skim_with_fn_target) {
+  status = green,
+  deps = [parse_bog],
+  description = "Verifies parsing of skim observation with target = fn(name)"
 }]

@@ -20,6 +20,11 @@
   contract_compliance = green
 )]
 
+#[skim(tracing) {
+  status = green,
+  notes = "Pure data types; no logic to instrument"
+}]
+
 #[skim(annotation-quality) {
   status = green,
   notes = "Pure data types; no function annotations needed beyond types"

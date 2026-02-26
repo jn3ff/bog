@@ -27,7 +27,9 @@ fn test_config_loading() {
     assert!(config.agents.contains_key("core-agent"));
     assert!(config.agents.contains_key("analysis-agent"));
     assert!(config.agents.contains_key("cli-agent"));
-    assert!(config.agents.contains_key("quality-agent"));
+    assert!(config.agents.contains_key("orchestrate-agent"));
+    assert!(config.agents.contains_key("code-standards-agent"));
+    assert!(config.agents.contains_key("observability-agent"));
     assert_eq!(config.tree_sitter.language, "rust");
     assert_eq!(config.health.dimensions.len(), 4);
 }
@@ -57,8 +59,8 @@ fn test_fixture_bog_parsing() {
     let root = workspace_root();
     let content = std::fs::read_to_string(root.join("crates/bog/tests/fixtures/src/auth.rs.bog")).unwrap();
     let bog = parser::parse_bog(&content).unwrap();
-    // file, description, health, fn(login), fn(logout)
-    assert_eq!(bog.annotations.len(), 5);
+    // file, description, health, skim(tracing), fn(login), fn(logout)
+    assert_eq!(bog.annotations.len(), 6);
 }
 
 // --- Tree-sitter ---
@@ -130,8 +132,8 @@ fn test_dogfood_validate() {
         "bog must validate its own .bog annotations"
     );
     assert!(
-        report.files_checked >= 10,
-        "expected at least 10 .bog files, got {}",
+        report.files_checked >= 25,
+        "expected at least 25 .bog files, got {}",
         report.files_checked
     );
 }
@@ -141,7 +143,7 @@ fn test_dogfood_health() {
     let root = workspace_root();
     let health = health::compute_health(&root);
     assert_eq!(health.name, "bog");
-    assert_eq!(health.subsystems.len(), 4);
+    assert_eq!(health.subsystems.len(), 5);
 
     let names: Vec<&str> = health
         .subsystems
@@ -151,6 +153,7 @@ fn test_dogfood_health() {
     assert!(names.contains(&"core"));
     assert!(names.contains(&"analysis"));
     assert!(names.contains(&"cli"));
+    assert!(names.contains(&"orchestrate"));
     assert!(names.contains(&"test-fixtures"));
 }
 

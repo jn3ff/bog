@@ -1,0 +1,47 @@
+#[file(
+  owner = "orchestrate-agent",
+  subsystem = "orchestrate",
+  updated = "2026-02-25",
+  status = green
+)]
+
+#[description {
+  Provider trait abstraction and ClaudeCliProvider implementation.
+  Shells out to the claude CLI binary with configurable timeout, model,
+  tools, and budget options. MockProvider available for tests.
+}]
+
+#[health(
+  test_coverage = yellow,
+  staleness = green,
+  complexity = green,
+  contract_compliance = green
+)]
+
+#[fn(invoke) {
+  status = green,
+  contract = {
+    in = [(prompt, str), (system_prompt, str), (working_dir, Path), (options, ProviderOptions)],
+    out = "Result<ProviderOutput, ProviderError>"
+  },
+  description = "Invokes claude CLI with the given prompt, system prompt, and options"
+}]
+
+#[fn(budget_to_turns) {
+  status = green,
+  contract = {
+    in = [(budget_usd, f64)],
+    out = "u32"
+  },
+  description = "Converts a dollar budget to max-turns count (~$0.05/turn heuristic)"
+}]
+
+#[skim(tracing) {
+  status = red,
+  notes = "No tracing instrumentation. invoke needs INFO with model/timeout/working_dir, DEBUG with full command args, WARN on non-zero exit. budget_to_turns needs TRACE."
+}]
+
+#[skim(annotation-quality) {
+  status = green,
+  notes = "Provider trait and implementation annotated with contracts"
+}]

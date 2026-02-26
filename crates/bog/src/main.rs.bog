@@ -15,6 +15,11 @@
   complexity = green
 )]
 
+#[skim(tracing) {
+  status = red,
+  notes = "No tracing instrumentation. main should initialize the tracing subscriber and log INFO at startup with version/config."
+}]
+
 #[fn(main) {
   status = green,
   deps = [cli::run],

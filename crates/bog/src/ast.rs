@@ -49,6 +49,7 @@ pub enum Annotation {
     Skim(SkimObservation),
     Policies(PoliciesAnnotation),
     ChangeRequests(Vec<ChangeRequest>),
+    Pickled(PickledAnnotation),
 }
 
 #[derive(Debug, Clone)]
@@ -144,6 +145,78 @@ pub enum SkimTarget {
 #[derive(Debug, Clone)]
 pub struct PoliciesAnnotation {
     pub fields: HashMap<String, Value>,
+}
+
+#[derive(Debug, Clone)]
+pub struct PickledAnnotation {
+    pub id: String,
+    pub agent: String,
+    pub updated: String,
+    pub kind: PickledKind,
+    pub supersedes: Option<String>,
+    pub tags: Vec<PickledTag>,
+    pub content: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PickledKind {
+    /// A deliberate choice with rationale — the ADR core
+    Decision,
+    /// Overturning or amending a previous decision
+    Reversal,
+    /// Background knowledge, domain understanding, accumulated lore
+    Context,
+    /// Something noticed — patterns, anomalies, smells, opportunities
+    Observation,
+    /// Explaining why something exists as-is (post-hoc justification)
+    Rationale,
+}
+
+impl fmt::Display for PickledKind {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            PickledKind::Decision => write!(f, "decision"),
+            PickledKind::Reversal => write!(f, "reversal"),
+            PickledKind::Context => write!(f, "context"),
+            PickledKind::Observation => write!(f, "observation"),
+            PickledKind::Rationale => write!(f, "rationale"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PickledTag {
+    /// Structure, design, interfaces, data model, patterns
+    Architecture,
+    /// Speed, memory, efficiency tradeoffs
+    Performance,
+    /// Error handling, resilience, fault tolerance, recovery
+    Reliability,
+    /// Access control, threats, trust boundaries
+    Security,
+    /// Test strategy, coverage, fixture design
+    Testing,
+    /// Business logic, domain concepts, integration points
+    Domain,
+    /// Technical debt, conventions, cleanup plans
+    Debt,
+    /// Dependencies, build, CI/CD, developer experience
+    Tooling,
+}
+
+impl fmt::Display for PickledTag {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            PickledTag::Architecture => write!(f, "architecture"),
+            PickledTag::Performance => write!(f, "performance"),
+            PickledTag::Reliability => write!(f, "reliability"),
+            PickledTag::Security => write!(f, "security"),
+            PickledTag::Testing => write!(f, "testing"),
+            PickledTag::Domain => write!(f, "domain"),
+            PickledTag::Debt => write!(f, "debt"),
+            PickledTag::Tooling => write!(f, "tooling"),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]

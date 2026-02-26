@@ -1,0 +1,89 @@
+#[file(
+  owner = "orchestrate-agent",
+  subsystem = "orchestrate",
+  updated = "2026-02-25",
+  status = green
+)]
+
+#[description {
+  Plan data types and validation. Defines DockPlan, AgentTask, AgentResult,
+  and AgentResultStatus. Provides plan validation (agent existence, dep bounds,
+  cycle detection) and topological sort via Kahn's algorithm.
+}]
+
+#[health(
+  test_coverage = green,
+  staleness = green,
+  complexity = green,
+  contract_compliance = green
+)]
+
+#[fn(validate_plan) {
+  status = green,
+  deps = [topological_sort],
+  contract = {
+    in = [(plan, DockPlan), (ctx, RepoContext)],
+    out = "Result<(), OrchestrateError>",
+    invariants = ["checks agent registration", "checks dep indices in bounds", "checks no cycles"]
+  },
+  description = "Validates a dock plan against the repo context"
+}]
+
+#[fn(topological_sort) {
+  status = green,
+  contract = {
+    in = [(plan, DockPlan)],
+    out = "Result<Vec<usize>, OrchestrateError>"
+  },
+  description = "Kahn's algorithm BFS topological sort over task dependency edges"
+}]
+
+#[fn(mock_plan) {
+  status = green,
+  description = "Test helper: constructs a DockPlan with given tasks"
+}]
+
+#[fn(task) {
+  status = green,
+  description = "Test helper: constructs an AgentTask with agent name and dep list"
+}]
+
+#[fn(test_topological_sort_linear) {
+  status = green,
+  deps = [topological_sort, mock_plan],
+  description = "Verifies linear dependency chain sorts correctly"
+}]
+
+#[fn(test_topological_sort_parallel) {
+  status = green,
+  deps = [topological_sort, mock_plan],
+  description = "Verifies parallel tasks with shared dependent sort correctly"
+}]
+
+#[fn(test_validate_plan_bad_agent) {
+  status = green,
+  deps = [validate_plan, mock_plan],
+  description = "Verifies unregistered agent name is rejected"
+}]
+
+#[fn(test_validate_plan_bad_dep_index) {
+  status = green,
+  deps = [validate_plan, mock_plan],
+  description = "Verifies out-of-bounds depends_on index is rejected"
+}]
+
+#[fn(test_validate_plan_valid) {
+  status = green,
+  deps = [validate_plan, mock_plan],
+  description = "Verifies a well-formed plan passes validation"
+}]
+
+#[skim(tracing) {
+  status = red,
+  notes = "No tracing instrumentation. validate_plan needs DEBUG with plan summary. topological_sort needs TRACE with execution order."
+}]
+
+#[skim(annotation-quality) {
+  status = green,
+  notes = "All functions annotated with contracts and descriptions"
+}]

@@ -78,6 +78,10 @@ impl Provider for ClaudeCliProvider {
 
         cmd.current_dir(working_dir);
 
+        // Clear the CLAUDECODE env var to allow nested Claude CLI sessions.
+        // The orchestrator spawns Claude as subprocesses — not true nesting.
+        cmd.env_remove("CLAUDECODE");
+
         let output = cmd.output().map_err(|e| {
             if e.kind() == std::io::ErrorKind::NotFound {
                 ProviderError::CliNotFound

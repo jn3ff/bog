@@ -112,7 +112,7 @@ mod tests {
     fn test_skimsystem_agent_allowed_bog_files() {
         let ctx = load_ctx();
         let entries = vec![diff("crates/bog/src/ast.rs.bog"), diff("crates/bog/src/cli.rs.bog")];
-        let violations = check_agent_permissions("quality-agent", &entries, &ctx);
+        let violations = check_agent_permissions("code-standards-agent", &entries, &ctx);
         assert!(violations.is_empty(), "skimsystem agent can modify .bog files: {violations:?}");
     }
 
@@ -120,7 +120,7 @@ mod tests {
     fn test_skimsystem_agent_disallowed_source_files() {
         let ctx = load_ctx();
         let entries = vec![diff("crates/bog/src/ast.rs")];
-        let violations = check_agent_permissions("quality-agent", &entries, &ctx);
+        let violations = check_agent_permissions("code-standards-agent", &entries, &ctx);
         assert_eq!(violations.len(), 1);
         assert!(violations[0].reason.contains("non-.bog file"));
     }

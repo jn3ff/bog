@@ -71,6 +71,13 @@
 }]
 
 
+
+
+#[skim(tracing) {
+  status = red,
+  notes = "No tracing instrumentation. apply_stubs needs INFO with stub count generated. find_missing_annotations needs DEBUG per file scanned. generate_stub and helpers need TRACE."
+}]
+
 // [integration:code-quality:clippy]
 #[skim(code-quality) {
   status = red,
@@ -79,183 +86,183 @@
 
 #[change_requests {
   #[request(
-    id = "code-quality-clippy-3a904c8c6ce97e92",
-    from = "quality-agent",
+    id = "code-quality-clippy-223da21f56dbfef1",
+    from = "code-standards-agent",
     target = file,
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::wildcard_imports (line 6): usage of wildcard import"
   )]
   #[request(
-    id = "code-quality-clippy-4ab24a3f891bfd6a",
-    from = "quality-agent",
+    id = "code-quality-clippy-878cc5a8ba8ecad8",
+    from = "code-standards-agent",
     target = file,
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::doc_markdown (line 18): item in documentation is missing backticks"
   )]
   #[request(
-    id = "code-quality-clippy-4ab24a3f891bfd6a",
-    from = "quality-agent",
+    id = "code-quality-clippy-878cc5a8ba8ecad8",
+    from = "code-standards-agent",
     target = file,
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::doc_markdown (line 18): item in documentation is missing backticks"
   )]
   #[request(
-    id = "code-quality-clippy-4ab24a3f891bfd6a",
-    from = "quality-agent",
+    id = "code-quality-clippy-878cc5a8ba8ecad8",
+    from = "code-standards-agent",
     target = file,
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::doc_markdown (line 18): item in documentation is missing backticks"
   )]
   #[request(
-    id = "code-quality-clippy-435743836e1c24be",
-    from = "quality-agent",
+    id = "code-quality-clippy-0ccf855fa8819bd3",
+    from = "code-standards-agent",
     target = fn(find_missing_annotations),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::must_use_candidate (line 19): this function could have a `#[must_use]` attribute"
   )]
   #[request(
-    id = "code-quality-clippy-8aba44d3e0819256",
-    from = "quality-agent",
+    id = "code-quality-clippy-8dd8023992fbe12a",
+    from = "code-standards-agent",
     target = fn(find_missing_annotations),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::manual_let_else (line 39): this could be rewritten as `let...else`"
   )]
   #[request(
-    id = "code-quality-clippy-55ad0267890bd7bf",
-    from = "quality-agent",
+    id = "code-quality-clippy-f588eeaeffad8b8a",
+    from = "code-standards-agent",
     target = fn(find_missing_annotations),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::manual_let_else (line 43): this could be rewritten as `let...else`"
   )]
   #[request(
-    id = "code-quality-clippy-64b915125beab3dd",
-    from = "quality-agent",
+    id = "code-quality-clippy-cb987cea5099df3a",
+    from = "code-standards-agent",
     target = fn(find_missing_annotations),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::manual_unwrap_or_default (line 54): match can be simplified with `.unwrap_or_default()`"
   )]
   #[request(
-    id = "code-quality-clippy-4a21893e963e524a",
-    from = "quality-agent",
+    id = "code-quality-clippy-21e8c7be37a57b68",
+    from = "code-standards-agent",
     target = fn(generate_stub),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::must_use_candidate (line 100): this function could have a `#[must_use]` attribute"
   )]
   #[request(
-    id = "code-quality-clippy-24a0a4661124f54b",
-    from = "quality-agent",
+    id = "code-quality-clippy-228d2b6cda60d323",
+    from = "code-standards-agent",
     target = fn(generate_stub),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::redundant_closure_for_method_calls (line 104): redundant closure"
   )]
   #[request(
-    id = "code-quality-clippy-b4891c39c0469ddb",
-    from = "quality-agent",
+    id = "code-quality-clippy-1f4b08ea9d80ede8",
+    from = "code-standards-agent",
     target = fn(generate_file_header),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::must_use_candidate (line 115): this function could have a `#[must_use]` attribute"
   )]
   #[request(
-    id = "code-quality-clippy-173086e647062de3",
-    from = "quality-agent",
+    id = "code-quality-clippy-1629f2bc38542c41",
+    from = "code-standards-agent",
     target = fn(find_subsystem_for_file),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::must_use_candidate (line 147): this function could have a `#[must_use]` attribute"
   )]
   #[request(
-    id = "code-quality-clippy-a126c52dec3847fe",
-    from = "quality-agent",
+    id = "code-quality-clippy-a361b0b6444d352c",
+    from = "code-standards-agent",
     target = fn(find_subsystem_for_file),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::collapsible_if (line 160): this `if` statement can be collapsed"
   )]
   #[request(
-    id = "code-quality-clippy-88980d4342be8fba",
-    from = "quality-agent",
+    id = "code-quality-clippy-5cf1f0ee37b987fb",
+    from = "code-standards-agent",
     target = fn(apply_stubs),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::must_use_candidate (line 173): this function could have a `#[must_use]` attribute"
   )]
   #[request(
-    id = "code-quality-clippy-ebf17011eb2d238f",
-    from = "quality-agent",
+    id = "code-quality-clippy-63e10d599b3fe180",
+    from = "code-standards-agent",
     target = file,
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::doc_markdown (line 227): item in documentation is missing backticks"
   )]
   #[request(
-    id = "code-quality-clippy-ebf17011eb2d238f",
-    from = "quality-agent",
+    id = "code-quality-clippy-63e10d599b3fe180",
+    from = "code-standards-agent",
     target = file,
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::doc_markdown (line 227): item in documentation is missing backticks"
   )]
   #[request(
-    id = "code-quality-clippy-9d179ab354a11a4b",
-    from = "quality-agent",
+    id = "code-quality-clippy-1f696dc3fffb2c3e",
+    from = "code-standards-agent",
     target = fn(list_stubs),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::must_use_candidate (line 228): this function could have a `#[must_use]` attribute"
   )]
   #[request(
-    id = "code-quality-clippy-ed60566d733598e8",
-    from = "quality-agent",
+    id = "code-quality-clippy-27a76893bfc39dde",
+    from = "code-standards-agent",
     target = fn(list_stubs),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::manual_let_else (line 244): this could be rewritten as `let...else`"
   )]
   #[request(
-    id = "code-quality-clippy-dd8eb4527cf3d6a4",
-    from = "quality-agent",
+    id = "code-quality-clippy-503a46a28a6f8c48",
+    from = "code-standards-agent",
     target = fn(list_stubs),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::manual_let_else (line 249): this could be rewritten as `let...else`"
   )]
   #[request(
-    id = "code-quality-clippy-3b6e24f50e609f9d",
-    from = "quality-agent",
+    id = "code-quality-clippy-59bb1f06baffe5e1",
+    from = "code-standards-agent",
     target = fn(list_stubs),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::collapsible_if (line 256): this `if` statement can be collapsed"
   )]
 }]

@@ -69,10 +69,17 @@
   description = "Lists all stub annotations across the project"
 }]
 
+#[skim(tracing) {
+  status = red,
+  notes = "No tracing instrumentation. CLI commands need INFO logs at step boundaries (validate started, status computed, etc.), WARN on non-fatal issues, ERROR before panics. Each fn needs at least one TRACE."
+}]
+
 #[skim(annotation-quality) {
   status = yellow,
   notes = "test_coverage is yellow; CLI commands have no unit tests"
 }]
+
+
 
 
 // [integration:code-quality:clippy]
@@ -83,111 +90,117 @@
 
 #[change_requests {
   #[request(
-    id = "code-quality-clippy-434d72ff905ee268",
-    from = "quality-agent",
+    id = "code-quality-clippy-8e90894fc0a34399",
+    from = "code-standards-agent",
     target = fn(run),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::missing_errors_doc (line 69): docs for function returning `Result` missing `# Errors` section"
   )]
   #[request(
-    id = "code-quality-clippy-4db8f8094f575ff0",
-    from = "quality-agent",
+    id = "code-quality-clippy-f69991cab4653c07",
+    from = "code-standards-agent",
     target = fn(cmd_validate),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::unnecessary_wraps (line 202): this function's return value is unnecessary"
   )]
   #[request(
-    id = "code-quality-clippy-233d47bcda19417f",
-    from = "quality-agent",
+    id = "code-quality-clippy-e5a14223348af51e",
+    from = "code-standards-agent",
     target = fn(cmd_status),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::unnecessary_wraps (line 232): this function's return value is unnecessary"
   )]
   #[request(
-    id = "code-quality-clippy-a6f1e6b1f8185732",
-    from = "quality-agent",
+    id = "code-quality-clippy-0651e9bf40a368e4",
+    from = "code-standards-agent",
     target = fn(cmd_check),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::unnecessary_wraps (line 250): this function's return value is unnecessary"
   )]
   #[request(
-    id = "code-quality-clippy-36064688e43deddf",
-    from = "quality-agent",
+    id = "code-quality-clippy-9067e93bb8c24396",
+    from = "code-standards-agent",
     target = fn(cmd_skim),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::unnecessary_wraps (line 291): this function's return value is unnecessary"
   )]
   #[request(
-    id = "code-quality-clippy-73039e3ae1044f0e",
-    from = "quality-agent",
+    id = "code-quality-clippy-cf55375d90a91db6",
+    from = "code-standards-agent",
     target = fn(cmd_skim),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::map_unwrap_or (line 410): called `map(<f>).unwrap_or(false)` on an `Option` value"
   )]
   #[request(
-    id = "code-quality-clippy-afcdc54635afd10d",
-    from = "quality-agent",
+    id = "code-quality-clippy-ce6c621ed9879cfd",
+    from = "code-standards-agent",
     target = fn(cmd_skim),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::collapsible_if (line 414): this `if` statement can be collapsed"
   )]
   #[request(
-    id = "code-quality-clippy-0f1d0c2872b2dc6f",
-    from = "quality-agent",
+    id = "code-quality-clippy-23afb75633d12e8c",
+    from = "code-standards-agent",
     target = fn(cmd_skim),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::collapsible_if (line 417): this `if` statement can be collapsed"
   )]
   #[request(
-    id = "code-quality-clippy-a640d259ad12bacc",
-    from = "quality-agent",
+    id = "code-quality-clippy-e144d2fb06ca9c0d",
+    from = "code-standards-agent",
     target = fn(cmd_skim_run),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::collapsible_if (line 468): this `if` statement can be collapsed"
   )]
   #[request(
-    id = "code-quality-clippy-69b9ffa70100c2b3",
-    from = "quality-agent",
+    id = "code-quality-clippy-36db83f658d0dd04",
+    from = "code-standards-agent",
     target = fn(cmd_skim_run),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::single_match_else (line 483): you seem to be trying to use `match` for destructuring a single pattern. Consider using `if let`"
   )]
   #[request(
-    id = "code-quality-clippy-1e71cd88868dd1e2",
-    from = "quality-agent",
+    id = "code-quality-clippy-69ca4316bb593bdc",
+    from = "code-standards-agent",
     target = fn(cmd_stub),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::unnecessary_wraps (line 554): this function's return value is unnecessary"
   )]
   #[request(
-    id = "code-quality-clippy-af1dc247e4cbb225",
-    from = "quality-agent",
+    id = "code-quality-clippy-801cea8513a8032e",
+    from = "code-standards-agent",
     target = fn(cmd_stub_list),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::unnecessary_wraps (line 599): this function's return value is unnecessary"
   )]
+}]
+
+#[fn(cmd_skim_run) {
+  status = green,
+  deps = [integration::run_integration, integration::write_integration_results, integration::print_report],
+  description = "Runs a skimsystem integration action end-to-end: execute tool, write results to .bog files, print report"
 }]

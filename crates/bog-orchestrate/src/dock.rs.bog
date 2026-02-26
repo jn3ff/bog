@@ -1,0 +1,89 @@
+#[file(
+  owner = "orchestrate-agent",
+  subsystem = "orchestrate",
+  updated = "2026-02-25",
+  status = green
+)]
+
+#[description {
+  Dock agent invocation. Calls the provider in read-only mode to produce
+  a DockPlan (JSON with tasks assigned to agents). Handles multiple Claude
+  output formats: raw JSON, CLI wrapper, markdown fences, and brace-matching
+  extraction from freeform text.
+}]
+
+#[health(
+  test_coverage = green,
+  staleness = green,
+  complexity = yellow,
+  contract_compliance = green
+)]
+
+#[fn(run_dock) {
+  status = green,
+  deps = [parse_dock_output, plan::validate_plan, prompt::build_dock_system_prompt, prompt::build_dock_replan_prompt],
+  contract = {
+    in = [(ctx, RepoContext), (user_request, str), (provider, Provider), (replan_context, Option)],
+    out = "Result<DockPlan, OrchestrateError>"
+  },
+  description = "Invokes dock agent read-only with Read/Grep/Glob/Bash tools, parses and validates result"
+}]
+
+#[fn(parse_dock_output) {
+  status = green,
+  deps = [extract_json_plan],
+  contract = {
+    in = [(stdout, str)],
+    out = "Result<DockPlan, OrchestrateError>"
+  },
+  description = "Tries Claude CLI JSON wrapper, then direct JSON, then extract_json_plan"
+}]
+
+#[fn(extract_json_plan) {
+  status = green,
+  contract = {
+    in = [(text, str)],
+    out = "Result<DockPlan, OrchestrateError>"
+  },
+  description = "Extracts JSON plan from freeform text via direct parse, markdown fence, or brace-matching"
+}]
+
+#[fn(test_parse_raw_json) {
+  status = green,
+  deps = [parse_dock_output],
+  description = "Verifies clean JSON parses into DockPlan"
+}]
+
+#[fn(test_parse_claude_cli_wrapped) {
+  status = green,
+  deps = [parse_dock_output],
+  description = "Verifies Claude CLI result wrapper is unwrapped correctly"
+}]
+
+#[fn(test_parse_markdown_wrapped) {
+  status = green,
+  deps = [parse_dock_output],
+  description = "Verifies JSON inside markdown code fence is extracted"
+}]
+
+#[fn(test_parse_with_surrounding_text) {
+  status = green,
+  deps = [parse_dock_output],
+  description = "Verifies brace-matching extracts JSON from surrounding prose"
+}]
+
+#[fn(test_parse_invalid) {
+  status = green,
+  deps = [parse_dock_output],
+  description = "Verifies non-JSON input returns Err"
+}]
+
+#[skim(tracing) {
+  status = red,
+  notes = "No tracing instrumentation. run_dock needs INFO at start/completion with plan summary. parse_dock_output needs DEBUG with strategy tried. extract_json_plan needs TRACE."
+}]
+
+#[skim(annotation-quality) {
+  status = green,
+  notes = "All functions annotated with contracts and descriptions"
+}]

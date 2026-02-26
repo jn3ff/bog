@@ -1,0 +1,44 @@
+#[file(
+  owner = "orchestrate-agent",
+  subsystem = "orchestrate",
+  updated = "2026-02-25",
+  status = green
+)]
+
+#[description {
+  Top-level orchestration loop. Dock agent plans tasks, agents execute in
+  isolated worktrees, permission violations trigger replanning. Supports
+  Incremental (merge-as-you-go) and AllOrNothing merge strategies.
+}]
+
+#[health(
+  test_coverage = yellow,
+  staleness = green,
+  complexity = yellow,
+  contract_compliance = green
+)]
+
+#[fn(orchestrate) {
+  status = green,
+  deps = [dock::run_dock, plan::topological_sort, agent::execute_agent_task],
+  contract = {
+    in = [(ctx, RepoContext), (user_request, str), (provider, Provider), (config, OrchestrateConfig)],
+    out = "Result<OrchestrateResult, OrchestrateError>",
+    invariants = [
+      "retries up to max_replan_attempts on permission violations",
+      "cleans up worktrees on both success and failure",
+      "returns ReplanExhausted if all attempts fail"
+    ]
+  },
+  description = "Main orchestration loop: dock plan, execute agents in worktrees, validate permissions, merge or replan"
+}]
+
+#[skim(tracing) {
+  status = red,
+  notes = "No tracing instrumentation. orchestrate needs INFO at each phase boundary (dock, execute, merge/reject), DEBUG with run_id and attempt number, WARN on replan, ERROR on exhaustion."
+}]
+
+#[skim(annotation-quality) {
+  status = yellow,
+  notes = "No unit tests; requires live provider for meaningful testing"
+}]

@@ -1,0 +1,90 @@
+#[file(
+  owner = "orchestrate-agent",
+  subsystem = "orchestrate",
+  updated = "2026-02-25",
+  status = green
+)]
+
+#[description {
+  Permission enforcement. Checks agent diffs against declared ownership
+  boundaries: subsystem agents must stay within their file globs,
+  skimsystem agents can only modify .bog files, unknown agents are
+  rejected entirely.
+}]
+
+#[health(
+  test_coverage = green,
+  staleness = green,
+  complexity = green,
+  contract_compliance = green
+)]
+
+#[fn(check_agent_permissions) {
+  status = green,
+  deps = [matches_any_glob],
+  contract = {
+    in = [(agent_name, str), (diff_entries, Vec), (ctx, RepoContext)],
+    out = "Vec<Violation>",
+    invariants = [
+      "subsystem agents checked against file globs",
+      "skimsystem agents restricted to .bog files",
+      "unknown agents always violate"
+    ]
+  },
+  description = "Checks diff entries against agent ownership, returns violations"
+}]
+
+#[fn(matches_any_glob) {
+  status = green,
+  description = "Tests a path against a list of glob patterns, returns true if any match"
+}]
+
+#[fn(diff) {
+  status = green,
+  description = "Test helper: constructs a DiffEntry with Modified change type"
+}]
+
+#[fn(load_ctx) {
+  status = green,
+  description = "Test helper: loads RepoContext from workspace root"
+}]
+
+#[fn(test_subsystem_agent_allowed_files) {
+  status = green,
+  deps = [check_agent_permissions, load_ctx],
+  description = "Verifies subsystem agent gets no violations for owned files"
+}]
+
+#[fn(test_subsystem_agent_disallowed_files) {
+  status = green,
+  deps = [check_agent_permissions, load_ctx],
+  description = "Verifies subsystem agent gets violation for files outside its globs"
+}]
+
+#[fn(test_skimsystem_agent_allowed_bog_files) {
+  status = green,
+  deps = [check_agent_permissions, load_ctx],
+  description = "Verifies skimsystem agent can modify .bog files"
+}]
+
+#[fn(test_skimsystem_agent_disallowed_source_files) {
+  status = green,
+  deps = [check_agent_permissions, load_ctx],
+  description = "Verifies skimsystem agent gets violation for non-.bog files"
+}]
+
+#[fn(test_unknown_agent_all_violations) {
+  status = green,
+  deps = [check_agent_permissions, load_ctx],
+  description = "Verifies unregistered agent gets violation for all files"
+}]
+
+#[skim(tracing) {
+  status = red,
+  notes = "No tracing instrumentation. check_agent_permissions needs DEBUG with agent role and violation count. matches_any_glob needs TRACE."
+}]
+
+#[skim(annotation-quality) {
+  status = green,
+  notes = "All functions annotated with contracts and descriptions"
+}]

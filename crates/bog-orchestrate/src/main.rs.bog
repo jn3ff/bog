@@ -1,0 +1,56 @@
+#[file(
+  owner = "orchestrate-agent",
+  subsystem = "orchestrate",
+  updated = "2026-02-25",
+  status = green
+)]
+
+#[description {
+  Binary entry point for bog-orchestrate. Defines CLI via clap with Run
+  and Skim subcommands. Thin dispatch layer: loads RepoContext, constructs
+  ClaudeCliProvider, delegates to dock/orchestrator/skim modules.
+}]
+
+#[health(
+  test_coverage = yellow,
+  staleness = green,
+  complexity = green,
+  contract_compliance = green
+)]
+
+#[fn(main) {
+  status = green,
+  deps = [cmd_skim, cmd_plan_only, cmd_run],
+  contract = {
+    out = "Result<(), Box<dyn Error>>"
+  },
+  description = "Entry point: parse CLI args, load context, dispatch subcommand"
+}]
+
+#[fn(cmd_skim) {
+  status = green,
+  deps = [skim::run_skim_lifecycle],
+  description = "Runs skim lifecycle for a named skimsystem and prints colored results"
+}]
+
+#[fn(cmd_plan_only) {
+  status = green,
+  deps = [dock::run_dock],
+  description = "Runs dock agent read-only and pretty-prints the JSON plan"
+}]
+
+#[fn(cmd_run) {
+  status = green,
+  deps = [orchestrator::orchestrate],
+  description = "Runs full orchestration loop and prints colored results"
+}]
+
+#[skim(tracing) {
+  status = red,
+  notes = "No tracing instrumentation. main should initialize tracing subscriber. Each cmd_* needs INFO at start with subcommand name."
+}]
+
+#[skim(annotation-quality) {
+  status = yellow,
+  notes = "No unit tests for CLI dispatch; tested via manual invocation"
+}]

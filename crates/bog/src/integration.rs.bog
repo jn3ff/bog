@@ -14,6 +14,13 @@
 )]
 
 
+
+
+#[skim(tracing) {
+  status = red,
+  notes = "No tracing instrumentation. run_integration needs INFO at start/completion with tool name, WARN on tool failures, ERROR on catastrophic tool errors. write_integration_results needs DEBUG."
+}]
+
 // [integration:code-quality:clippy]
 #[skim(code-quality) {
   status = red,
@@ -22,84 +29,164 @@
 
 #[change_requests {
   #[request(
-    id = "code-quality-clippy-e3a7b621f3914a64",
-    from = "quality-agent",
+    id = "code-quality-clippy-596fa01ce0f9e626",
+    from = "code-standards-agent",
     target = file,
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::wildcard_imports (line 9): usage of wildcard import"
   )]
   #[request(
-    id = "code-quality-clippy-ef082836715908bb",
-    from = "quality-agent",
+    id = "code-quality-clippy-a9e9fe553c010eb0",
+    from = "code-standards-agent",
     target = fn(run_integration),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::missing_errors_doc (line 81): docs for function returning `Result` missing `# Errors` section"
   )]
   #[request(
-    id = "code-quality-clippy-54763a185402c142",
-    from = "quality-agent",
+    id = "code-quality-clippy-7a22f7c2ca1d3108",
+    from = "code-standards-agent",
     target = fn(find_enclosing_function),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::manual_let_else (line 212): this could be rewritten as `let...else`"
   )]
   #[request(
-    id = "code-quality-clippy-9ad3da49493737a1",
-    from = "quality-agent",
+    id = "code-quality-clippy-dc044442369494fd",
+    from = "code-standards-agent",
     target = fn(find_enclosing_function),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::manual_let_else (line 216): this could be rewritten as `let...else`"
   )]
   #[request(
-    id = "code-quality-clippy-3ecf3855a28e7fd4",
-    from = "quality-agent",
+    id = "code-quality-clippy-a96034670abd0120",
+    from = "code-standards-agent",
     target = file,
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::doc_markdown (line 238): item in documentation is missing backticks"
   )]
   #[request(
-    id = "code-quality-clippy-a74efc6fe9af3770",
-    from = "quality-agent",
+    id = "code-quality-clippy-f5512ed933d58f27",
+    from = "code-standards-agent",
     target = fn(write_integration_results),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::missing_errors_doc (line 239): docs for function returning `Result` missing `# Errors` section"
   )]
   #[request(
-    id = "code-quality-clippy-47baf685825712cf",
-    from = "quality-agent",
+    id = "code-quality-clippy-14397abfdeff67d8",
+    from = "code-standards-agent",
     target = fn(write_integration_results),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::format_push_string (line 287): `format!(..)` appended to existing `String`"
   )]
   #[request(
-    id = "code-quality-clippy-9f2d051c7633f36d",
-    from = "quality-agent",
+    id = "code-quality-clippy-98f0dc3105b3993b",
+    from = "code-standards-agent",
     target = fn(write_integration_results),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::format_push_string (line 297): `format!(..)` appended to existing `String`"
   )]
   #[request(
-    id = "code-quality-clippy-41e88ad49ef7d189",
-    from = "quality-agent",
+    id = "code-quality-clippy-9b652f4be0b57683",
+    from = "code-standards-agent",
     target = fn(write_integration_results),
     type = lint_warning,
     status = pending,
-    created = "2026-02-24",
+    created = "2026-02-25",
     description = "clippy::format_push_string (line 314): `format!(..)` appended to existing `String`"
   )]
+}]
+
+#[fn(run_integration) {
+  status = green,
+  deps = [parse_cargo_diagnostic, map_findings_to_subsystems],
+  contract = {
+    in = [(root, Path), (command, str), (format, str)],
+    out = "Result<IntegrationResult, IntegrationError>"
+  },
+  description = "Runs an external tool command, parses output, and maps findings to subsystems"
+}]
+
+#[fn(parse_cargo_diagnostic) {
+  status = green,
+  contract = {
+    in = [(output, str)],
+    out = "Vec<Finding>"
+  },
+  description = "Parses cargo JSON diagnostic output into Finding structs"
+}]
+
+#[fn(map_findings_to_subsystems) {
+  status = green,
+  deps = [stub::find_subsystem_for_file],
+  description = "Maps tool findings to their owning subsystems via file path matching"
+}]
+
+#[fn(find_enclosing_function) {
+  status = green,
+  deps = [treesitter::extract_symbols],
+  description = "Uses tree-sitter to find which function encloses a given line number"
+}]
+
+#[fn(generate_finding_id) {
+  status = green,
+  description = "Generates a deterministic hash-based ID for a finding"
+}]
+
+#[fn(write_integration_results) {
+  status = green,
+  deps = [find_enclosing_function, generate_finding_id, stub::generate_file_header],
+  contract = {
+    in = [(root, Path), (skimsystem_name, str), (result, IntegrationResult)],
+    out = "Result<(), IntegrationError>"
+  },
+  description = "Writes integration findings as skim observations and change_requests to .bog files"
+}]
+
+#[fn(print_report) {
+  status = green,
+  description = "Prints a colored summary of integration findings to stdout"
+}]
+
+#[fn(test_parse_cargo_diagnostic_basic) {
+  status = green,
+  deps = [parse_cargo_diagnostic],
+  description = "Verifies basic cargo diagnostic JSON is parsed into a Finding"
+}]
+
+#[fn(test_parse_cargo_diagnostic_skips_non_warnings) {
+  status = green,
+  deps = [parse_cargo_diagnostic],
+  description = "Verifies non-warning diagnostics are filtered out"
+}]
+
+#[fn(test_parse_cargo_diagnostic_skips_no_code) {
+  status = green,
+  deps = [parse_cargo_diagnostic],
+  description = "Verifies diagnostics without a code field are skipped"
+}]
+
+#[fn(test_generate_finding_id_deterministic) {
+  status = green,
+  deps = [generate_finding_id],
+  description = "Verifies same inputs produce same finding ID"
+}]
+
+#[fn(test_generate_finding_id_varies) {
+  status = green,
+  description = "Verifies different inputs produce different finding IDs"
 }]

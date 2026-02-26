@@ -16,6 +16,11 @@
   staleness = green
 )]
 
+#[skim(tracing) {
+  status = green,
+  notes = "Test file; tracing not applicable to test functions"
+}]
+
 #[fn(test_config_loading) {
   status = green,
   deps = [config::load_config],
@@ -92,4 +97,15 @@
   status = green,
   deps = [health::compute_health],
   description = "Ensures every declared subsystem has annotated files"
+}]
+
+#[fn(workspace_root) {
+  status = green,
+  description = "Test helper: resolves workspace root from CARGO_MANIFEST_DIR"
+}]
+
+#[fn(test_dogfood_code_quality_integration) {
+  status = green,
+  deps = [parser::parse_bog, workspace_root],
+  description = "Ensures code-quality skimsystem declaration parses with integrations block"
 }]

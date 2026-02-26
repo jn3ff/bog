@@ -32,6 +32,27 @@
   description = "CLI commands and entry point"
 }]
 
+#[subsystem(orchestrate) {
+  owner = "orchestrate-agent",
+  files = [
+    "crates/bog-orchestrate/src/lib.rs",
+    "crates/bog-orchestrate/src/main.rs",
+    "crates/bog-orchestrate/src/orchestrator.rs",
+    "crates/bog-orchestrate/src/dock.rs",
+    "crates/bog-orchestrate/src/agent.rs",
+    "crates/bog-orchestrate/src/skim.rs",
+    "crates/bog-orchestrate/src/context.rs",
+    "crates/bog-orchestrate/src/plan.rs",
+    "crates/bog-orchestrate/src/permissions.rs",
+    "crates/bog-orchestrate/src/prompt.rs",
+    "crates/bog-orchestrate/src/provider.rs",
+    "crates/bog-orchestrate/src/worktree.rs",
+    "crates/bog-orchestrate/src/error.rs"
+  ],
+  status = yellow,
+  description = "Multi-agent orchestration: dock planning, agent execution in worktrees, permission enforcement, skim lifecycle"
+}]
+
 #[subsystem(test-fixtures) {
   owner = "analysis-agent",
   files = ["crates/bog/tests/fixtures/src/auth.rs", "crates/bog/tests/integration.rs"],
@@ -40,7 +61,7 @@
 }]
 
 #[skimsystem(annotation-quality) {
-  owner = "quality-agent",
+  owner = "bog-health-agent",
   targets = all,
   status = green,
   principles = [
@@ -51,8 +72,22 @@
   description = "Ensures .bog annotations are complete and informative"
 }]
 
+#[skimsystem(tracing) {
+  owner = "observability-agent",
+  targets = all,
+  status = red,
+  principles = [
+    "TRACE: Low-level actions taken and conditions checked; every function should have at least one trace log",
+    "DEBUG: Low-level state/variable logs; first recourse when behavior is unexpected",
+    "INFO: Significant application moments — runtime decisions, configs loaded, step boundaries; watching at INFO should show meaningful progress without minutia",
+    "WARN: Issues that are understood and handled; non-catastrophic but worth continuing to flag",
+    "ERROR: Probably catastrophic issues; unless retrying or otherwise handling, these should generally result in panics"
+  ],
+  description = "Ensures all functions are properly instrumented with tracing crate logs following the project's leveled tracing philosophy"
+}]
+
 #[skimsystem(code-quality) {
-  owner = "quality-agent",
+  owner = "code-standards-agent",
   targets = all,
   status = green,
   integrations = {

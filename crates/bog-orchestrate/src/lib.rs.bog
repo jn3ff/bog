@@ -1,7 +1,7 @@
 #[file(
-  owner = "core-agent",
-  subsystem = "core",
-  updated = "2026-02-24",
+  owner = "orchestrate-agent",
+  subsystem = "orchestrate",
+  updated = "2026-02-25",
   status = green
 )]
 
@@ -18,4 +18,9 @@
 #[skim(tracing) {
   status = green,
   notes = "Re-export module only; no logic to instrument"
+}]
+
+#[skim(annotation-quality) {
+  status = green,
+  notes = "Pure module declarations; no function annotations needed"
 }]
