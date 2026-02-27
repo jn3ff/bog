@@ -16,83 +16,247 @@
 
 
 
+
+
 // [integration:code-quality:clippy]
 #[skim(code-quality) {
   status = red,
-  notes = "clippy: 8 warning(s)"
+  notes = "clippy: 26 warning(s)"
 }]
 
 #[change_requests {
   #[request(
-    id = "code-quality-clippy-6b860672a26c22e5",
-    from = "code-standards-agent",
-    target = fn(build_dock_replan_prompt),
-    type = lint_warning,
-    status = pending,
-    created = "2026-02-27",
-    description = "clippy::needless_raw_string_hashes (line 73): unnecessary hashes around raw string literal"
-  )]
-  #[request(
-    id = "code-quality-clippy-c34d4a022adafff9",
-    from = "code-standards-agent",
-    target = fn(build_subsystem_agent_prompt),
-    type = lint_warning,
-    status = pending,
-    created = "2026-02-27",
-    description = "clippy::needless_raw_string_hashes (line 97): unnecessary hashes around raw string literal"
-  )]
-  #[request(
-    id = "code-quality-clippy-37886daac67dd178",
+    id = "code-quality-clippy-2ebbaf88a9ae63d0",
     from = "code-standards-agent",
     target = fn(build_dock_system_prompt),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::must_use_candidate (line 5): this function could have a `#[must_use]` attribute"
+    description = "clippy::must_use_candidate (line 11): this function could have a `#[must_use]` attribute"
   )]
   #[request(
-    id = "code-quality-clippy-0dc184379d523326",
+    id = "code-quality-clippy-3231fcf6d25f4ba2",
     from = "code-standards-agent",
     target = fn(build_dock_replan_prompt),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::must_use_candidate (line 58): this function could have a `#[must_use]` attribute"
+    description = "clippy::must_use_candidate (line 71): this function could have a `#[must_use]` attribute"
   )]
   #[request(
-    id = "code-quality-clippy-949c5b3c430914c9",
+    id = "code-quality-clippy-86fa250f3fea743e",
     from = "code-standards-agent",
     target = fn(build_dock_replan_prompt),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::format_push_string (line 66): `format!(..)` appended to existing `String`"
+    description = "clippy::format_push_string (line 79): `format!(..)` appended to existing `String`"
   )]
   #[request(
-    id = "code-quality-clippy-5081c9fe462d231f",
+    id = "code-quality-clippy-dc7759216b8f66aa",
     from = "code-standards-agent",
     target = fn(build_dock_replan_prompt),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::format_push_string (line 68): `format!(..)` appended to existing `String`"
+    description = "clippy::format_push_string (line 81): `format!(..)` appended to existing `String`"
   )]
   #[request(
-    id = "code-quality-clippy-69e9ec56707060db",
+    id = "code-quality-clippy-bbee29ed80d8002e",
     from = "code-standards-agent",
     target = fn(build_subsystem_agent_prompt),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::must_use_candidate (line 84): this function could have a `#[must_use]` attribute"
+    description = "clippy::must_use_candidate (line 99): this function could have a `#[must_use]` attribute"
   )]
   #[request(
-    id = "code-quality-clippy-75ef4e0c83f13e93",
+    id = "code-quality-clippy-d3c07d51f7eac4e1",
     from = "code-standards-agent",
     target = fn(build_skimsystem_agent_prompt),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::must_use_candidate (line 143): this function could have a `#[must_use]` attribute"
+    description = "clippy::must_use_candidate (line 159): this function could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-f75c1ecbeb3c62e8",
+    from = "code-standards-agent",
+    target = fn(render_subsystem_identity),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 222): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-c4dfc383f0a71cbf",
+    from = "code-standards-agent",
+    target = fn(render_subsystem_identity),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 224): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-cf34d4cec6d8ceaf",
+    from = "code-standards-agent",
+    target = fn(render_subsystem_identity),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 227): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-3c24da42feae6856",
+    from = "code-standards-agent",
+    target = fn(render_file_annotations),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 263): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-f798b412bc2bd673",
+    from = "code-standards-agent",
+    target = fn(render_file_annotations),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 268): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-f8bac4bccb178111",
+    from = "code-standards-agent",
+    target = fn(render_file_annotations),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 273): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-f6bd1bae6a789727",
+    from = "code-standards-agent",
+    target = fn(render_file_annotations),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 286): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-b8be667a1c3329ea",
+    from = "code-standards-agent",
+    target = fn(render_pending_requests),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 305): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-0c3e7d529571b994",
+    from = "code-standards-agent",
+    target = fn(render_pending_requests),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 307): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-09219b8d966c492d",
+    from = "code-standards-agent",
+    target = fn(render_pickled_notes),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::redundant_closure_for_method_calls (line 322): redundant closure"
+  )]
+  #[request(
+    id = "code-quality-clippy-57dc03ad82fa1c38",
+    from = "code-standards-agent",
+    target = fn(render_pickled_notes),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 346): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-c543f9557370fc36",
+    from = "code-standards-agent",
+    target = fn(render_health_rollup),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::manual_let_else (line 371): this could be rewritten as `let...else`"
+  )]
+  #[request(
+    id = "code-quality-clippy-257c1eacc48f496c",
+    from = "code-standards-agent",
+    target = fn(render_health_rollup),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 424): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-f79e84769bd0d100",
+    from = "code-standards-agent",
+    target = fn(render_skimsystem_identity),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 468): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-7d4eef31b50c819e",
+    from = "code-standards-agent",
+    target = fn(render_skimsystem_identity),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 470): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-df3fb1b567027fd1",
+    from = "code-standards-agent",
+    target = fn(render_skim_observations),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 530): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-48ec5b75519d1eb2",
+    from = "code-standards-agent",
+    target = fn(render_skim_observations),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 540): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-e029d787c41ef610",
+    from = "code-standards-agent",
+    target = fn(extract_notable_functions),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 658): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-f7007da7b7d64cf3",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 672): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-90a9801f40edd3f8",
+    from = "code-standards-agent",
+    target = fn(format_value),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::match_same_arms (line 709): these match arms have identical bodies"
   )]
 }]

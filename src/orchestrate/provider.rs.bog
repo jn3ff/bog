@@ -16,10 +16,12 @@
 
 
 
+
+
 // [integration:code-quality:clippy]
 #[skim(code-quality) {
   status = red,
-  notes = "clippy: 7 warning(s)"
+  notes = "clippy: 8 warning(s)"
 }]
 
 #[change_requests {
@@ -33,57 +35,66 @@
     description = "clippy::missing_errors_doc (line 46): docs for function returning `Result` missing `# Errors` section"
   )]
   #[request(
-    id = "code-quality-clippy-127da2358c96a8cb",
+    id = "code-quality-clippy-c1f4d446dd0b5631",
     from = "code-standards-agent",
     target = fn(invoke),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::map_unwrap_or (line 80): called `map(<f>).unwrap_or(<a>)` on an `Option` value"
+    description = "clippy::too_many_lines (line 59): this function has too many lines (101/100)"
   )]
   #[request(
-    id = "code-quality-clippy-e0bcf4adbed8ceff",
+    id = "code-quality-clippy-1f451cf11d8c9c3a",
     from = "code-standards-agent",
     target = fn(invoke),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::lines_filter_map_ok (line 112): `flatten()` will run forever if the iterator repeatedly produces an `Err`"
+    description = "clippy::map_unwrap_or (line 81): called `map(<f>).unwrap_or(<a>)` on an `Option` value"
   )]
   #[request(
-    id = "code-quality-clippy-1427f32768f92e4b",
+    id = "code-quality-clippy-930022edc6708dcc",
+    from = "code-standards-agent",
+    target = fn(invoke),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::lines_filter_map_ok (line 113): `flatten()` will run forever if the iterator repeatedly produces an `Err`"
+  )]
+  #[request(
+    id = "code-quality-clippy-eb5e8a640e1569b3",
     from = "code-standards-agent",
     target = fn(parse_event_stream),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::lines_filter_map_ok (line 210): `flatten()` will run forever if the iterator repeatedly produces an `Err`"
+    description = "clippy::lines_filter_map_ok (line 217): `flatten()` will run forever if the iterator repeatedly produces an `Err`"
   )]
   #[request(
-    id = "code-quality-clippy-c21c607dd74f48ed",
+    id = "code-quality-clippy-64ea4a304b5def80",
     from = "code-standards-agent",
     target = fn(parse_event_stream),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::cast_possible_truncation (line 260): casting `u64` to `u32` may truncate the value"
+    description = "clippy::cast_possible_truncation (line 267): casting `u64` to `u32` may truncate the value"
   )]
   #[request(
-    id = "code-quality-clippy-8cc788f1a659366c",
+    id = "code-quality-clippy-76422c92ec4c2b1e",
     from = "code-standards-agent",
     target = fn(budget_to_turns),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::cast_possible_truncation (line 296): casting `f64` to `u32` may truncate the value"
+    description = "clippy::cast_possible_truncation (line 303): casting `f64` to `u32` may truncate the value"
   )]
   #[request(
-    id = "code-quality-clippy-749d3ec403d7a091",
+    id = "code-quality-clippy-b12a4cf8958caf01",
     from = "code-standards-agent",
     target = fn(budget_to_turns),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::cast_sign_loss (line 296): casting `f64` to `u32` may lose the sign of the value"
+    description = "clippy::cast_sign_loss (line 303): casting `f64` to `u32` may lose the sign of the value"
   )]
 }]

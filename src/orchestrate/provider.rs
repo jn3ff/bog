@@ -67,6 +67,7 @@ impl Provider for ClaudeCliProvider {
         cmd.arg("-p").arg(prompt);
         cmd.arg("--system-prompt").arg(system_prompt);
         cmd.arg("--output-format").arg("stream-json");
+        cmd.arg("--verbose");
 
         if let Some(ref model) = options.model {
             cmd.arg("--model").arg(model);
@@ -135,6 +136,7 @@ impl Provider for ClaudeCliProvider {
                     let exit_code = status.code().unwrap_or(-1);
 
                     // Print summary line
+                    let failed = progress.is_error || exit_code != 0;
                     if !label.is_empty() {
                         let elapsed = start.elapsed().as_secs();
                         let turns = progress.num_turns.unwrap_or(progress.turn_count);
@@ -142,8 +144,13 @@ impl Provider for ClaudeCliProvider {
                             .cost_usd
                             .map(|c| format!(", ${c:.2}"))
                             .unwrap_or_default();
-                        if progress.is_error {
-                            eprintln!("  [{label}] ✗ failed — {elapsed}s, {turns} turns{cost}");
+                        if failed {
+                            eprintln!("  [{label}] ✗ failed (exit {exit_code}) — {elapsed}s, {turns} turns{cost}");
+                            if !stderr.is_empty() {
+                                for line in stderr.lines().take(10) {
+                                    eprintln!("  [{label}]   {line}");
+                                }
+                            }
                         } else {
                             eprintln!("  [{label}] ✓ done — {elapsed}s, {turns} turns{cost}");
                         }
@@ -270,7 +277,10 @@ fn parse_event_stream(pipe: Option<ChildStdout>, label: &str) -> StreamProgress 
 /// Extract a short summary of a tool's input for progress display.
 fn summarize_tool_input(tool: &str, input: &serde_json::Value) -> String {
     match tool {
-        "Read" | "Edit" | "Write" => input["file_path"].as_str().unwrap_or("").to_string(),
+        "Read" | "Edit" | "Write" => {
+            let path = input["file_path"].as_str().unwrap_or("");
+            strip_worktree_prefix(path).to_string()
+        }
         "Bash" => {
             let cmd = input["command"].as_str().unwrap_or("").trim();
             if cmd.chars().count() > 60 {
@@ -282,12 +292,30 @@ fn summarize_tool_input(tool: &str, input: &serde_json::Value) -> String {
         }
         "Grep" => {
             let pattern = input["pattern"].as_str().unwrap_or("");
-            let path = input["path"].as_str().unwrap_or(".");
+            let path = strip_worktree_prefix(input["path"].as_str().unwrap_or("."));
             format!("/{pattern}/ {path}")
         }
         "Glob" => input["pattern"].as_str().unwrap_or("").to_string(),
         _ => String::new(),
     }
+}
+
+/// Strip `.bog-worktrees/<uuid>/<agent>/` prefix from absolute paths.
+fn strip_worktree_prefix(path: &str) -> &str {
+    if let Some(idx) = path.find(".bog-worktrees/") {
+        let after = &path[idx..];
+        // Skip past .bog-worktrees/<uuid>/<agent>/
+        let mut slashes = 0;
+        for (i, ch) in after.char_indices() {
+            if ch == '/' {
+                slashes += 1;
+                if slashes == 3 {
+                    return &after[i + 1..];
+                }
+            }
+        }
+    }
+    path
 }
 
 /// Rough heuristic: convert a dollar budget to max turns.

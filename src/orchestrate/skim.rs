@@ -95,7 +95,15 @@ pub fn run_skim_lifecycle(
             .create_worktree(&wp.agent, &run_id)
             .map_err(OrchestrateError::Worktree)?;
 
-        let result = agent::execute_agent_task(ctx, &task, i, worktree, provider)?;
+        let result = match agent::execute_agent_task(ctx, &task, i, worktree, provider) {
+            Ok(r) => r,
+            Err(e) => {
+                eprintln!("[skim]   {} error: {e}", wp.agent);
+                // Clean up worktrees before propagating
+                let _ = worktree_mgr.cleanup_run(&run_id);
+                return Err(e);
+            }
+        };
 
         match &result.status {
             AgentResultStatus::Success => {

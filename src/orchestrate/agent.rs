@@ -38,12 +38,27 @@ pub fn execute_agent_task(
             "Grep".to_string(),
             "Glob".to_string(),
         ]),
-        timeout_seconds: 300,
+        timeout_seconds: 900,
         agent_label: Some(task.agent.clone()),
         ..Default::default()
     };
 
     let output = provider.invoke(&task.instruction, &system_prompt, &worktree.path, &options)?;
+
+    // Fail fast if the provider exited with an error
+    if output.exit_code != 0 {
+        return Ok(AgentResult {
+            agent: task.agent.clone(),
+            task_index,
+            status: AgentResultStatus::Failed(format!(
+                "claude exited with code {}",
+                output.exit_code
+            )),
+            files_modified: vec![],
+            stdout: output.stdout,
+            stderr: output.stderr,
+        });
+    }
 
     // Auto-commit any uncommitted changes in the worktree
     WorktreeManager::auto_commit(worktree).map_err(|e| OrchestrateError::AgentFailed {

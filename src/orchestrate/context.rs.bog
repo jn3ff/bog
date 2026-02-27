@@ -16,83 +16,112 @@
 
 
 
+
+
 // [integration:code-quality:clippy]
 #[skim(code-quality) {
   status = red,
-  notes = "clippy: 8 warning(s)"
+  notes = "clippy: 11 warning(s)"
 }]
 
 #[change_requests {
   #[request(
-    id = "code-quality-clippy-1f7da96b650e3952",
+    id = "code-quality-clippy-41b246807e7db01e",
     from = "code-standards-agent",
     target = fn(load),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::missing_errors_doc (line 27): docs for function returning `Result` missing `# Errors` section"
+    description = "clippy::missing_errors_doc (line 31): docs for function returning `Result` missing `# Errors` section"
   )]
   #[request(
-    id = "code-quality-clippy-cb5d87012f224d30",
+    id = "code-quality-clippy-b3a1e63cd2cfb945",
     from = "code-standards-agent",
     target = fn(agent_file_globs),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::must_use_candidate (line 79): this method could have a `#[must_use]` attribute"
+    description = "clippy::must_use_candidate (line 85): this method could have a `#[must_use]` attribute"
   )]
   #[request(
-    id = "code-quality-clippy-ce29a8a023927af3",
+    id = "code-quality-clippy-f581fd77c20aa0fc",
     from = "code-standards-agent",
     target = fn(agent_role),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::must_use_candidate (line 95): this method could have a `#[must_use]` attribute"
+    description = "clippy::must_use_candidate (line 101): this method could have a `#[must_use]` attribute"
   )]
   #[request(
-    id = "code-quality-clippy-273650df379be6ba",
+    id = "code-quality-clippy-0d07f4d593b943a5",
     from = "code-standards-agent",
     target = fn(format_agent_registry),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::must_use_candidate (line 100): this method could have a `#[must_use]` attribute"
+    description = "clippy::must_use_candidate (line 106): this method could have a `#[must_use]` attribute"
   )]
   #[request(
-    id = "code-quality-clippy-564de10511936e89",
+    id = "code-quality-clippy-714319aa8f4b3874",
     from = "code-standards-agent",
     target = fn(format_agent_registry),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::map_unwrap_or (line 102): called `map(<f>).unwrap_or(<a>)` on an `Option` value"
+    description = "clippy::map_unwrap_or (line 108): called `map(<f>).unwrap_or(<a>)` on an `Option` value"
   )]
   #[request(
-    id = "code-quality-clippy-6046c4f149b576b4",
+    id = "code-quality-clippy-d22c340852e0c382",
     from = "code-standards-agent",
     target = fn(format_agent_registry),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::redundant_closure_for_method_calls (line 103): redundant closure"
+    description = "clippy::redundant_closure_for_method_calls (line 109): redundant closure"
   )]
   #[request(
-    id = "code-quality-clippy-27651cf8fbb5384d",
+    id = "code-quality-clippy-1690c9b80a73cd16",
     from = "code-standards-agent",
     target = fn(format_subsystem_summary),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::must_use_candidate (line 112): this method could have a `#[must_use]` attribute"
+    description = "clippy::must_use_candidate (line 118): this method could have a `#[must_use]` attribute"
   )]
   #[request(
-    id = "code-quality-clippy-cc1d7352a12d5128",
+    id = "code-quality-clippy-57d6d5989ddb7c05",
     from = "code-standards-agent",
     target = fn(format_skimsystem_summary),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::must_use_candidate (line 125): this method could have a `#[must_use]` attribute"
+    description = "clippy::must_use_candidate (line 131): this method could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-4a287c64e33cb895",
+    from = "code-standards-agent",
+    target = fn(sidecar_bogs_for_files),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 144): this method could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-b19215d0b8eb3127",
+    from = "code-standards-agent",
+    target = fn(agent_sidecar_bogs),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 156): this method could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-171871f888816e20",
+    from = "code-standards-agent",
+    target = fn(skimsystem_sidecar_bogs),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 162): this method could have a `#[must_use]` attribute"
   )]
 }]
