@@ -39,6 +39,7 @@ pub fn execute_agent_task(
             "Glob".to_string(),
         ]),
         timeout_seconds: 300,
+        agent_label: Some(task.agent.clone()),
         ..Default::default()
     };
 

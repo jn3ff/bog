@@ -34,6 +34,7 @@ pub fn run_dock(
             "Bash".to_string(),
         ]),
         timeout_seconds: 120,
+        agent_label: Some("dock".to_string()),
         ..Default::default()
     };
 

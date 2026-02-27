@@ -84,6 +84,8 @@
 
 
 
+
+
 // [integration:code-quality:clippy]
 #[skim(code-quality) {
   status = red,

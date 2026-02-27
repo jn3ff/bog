@@ -14,6 +14,8 @@
 )]
 
 
+
+
 // [integration:code-quality:clippy]
 #[skim(code-quality) {
   status = yellow,
@@ -31,21 +33,21 @@
     description = "clippy::missing_errors_doc (line 16): docs for function returning `Result` missing `# Errors` section"
   )]
   #[request(
-    id = "code-quality-clippy-6faaad8b41e8ac02",
+    id = "code-quality-clippy-2655cc6e133e2373",
     from = "code-standards-agent",
     target = file,
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::doc_markdown (line 56): item in documentation is missing backticks"
+    description = "clippy::doc_markdown (line 57): item in documentation is missing backticks"
   )]
   #[request(
-    id = "code-quality-clippy-98a3113b5ccc2481",
+    id = "code-quality-clippy-3d07cfe468eb6d03",
     from = "code-standards-agent",
     target = file,
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::doc_markdown (line 79): item in documentation is missing backticks"
+    description = "clippy::doc_markdown (line 80): item in documentation is missing backticks"
   )]
 }]

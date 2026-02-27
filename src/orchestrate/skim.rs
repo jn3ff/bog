@@ -95,11 +95,6 @@ pub fn run_skim_lifecycle(
             .create_worktree(&wp.agent, &run_id)
             .map_err(OrchestrateError::Worktree)?;
 
-        let total_reqs: usize = wp.requests.iter().map(|(_, _, rs)| rs.len()).sum();
-        eprintln!(
-            "[skim]   Worktree ready, invoking Claude CLI ({total_reqs} issues, this may take a few minutes)..."
-        );
-
         let result = agent::execute_agent_task(ctx, &task, i, worktree, provider)?;
 
         match &result.status {

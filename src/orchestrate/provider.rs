@@ -1,6 +1,6 @@
-use std::io::{BufRead, BufReader, Read as _};
+use std::io::{BufRead, BufReader};
 use std::path::Path;
-use std::process::{Command, Stdio};
+use std::process::{ChildStdout, Command, Stdio};
 use std::time::{Duration, Instant};
 
 use super::error::ProviderError;
@@ -24,6 +24,8 @@ pub struct ProviderOptions {
     pub allowed_tools: Option<Vec<String>>,
     /// Maximum dollar budget for this invocation.
     pub max_budget_usd: Option<f64>,
+    /// Label for progress output (e.g., agent name). None = silent.
+    pub agent_label: Option<String>,
 }
 
 impl Default for ProviderOptions {
@@ -34,6 +36,7 @@ impl Default for ProviderOptions {
             read_only: false,
             allowed_tools: None,
             max_budget_usd: None,
+            agent_label: None,
         }
     }
 }
@@ -63,7 +66,7 @@ impl Provider for ClaudeCliProvider {
         let mut cmd = Command::new("claude");
         cmd.arg("-p").arg(prompt);
         cmd.arg("--system-prompt").arg(system_prompt);
-        cmd.arg("--output-format").arg("json");
+        cmd.arg("--output-format").arg("stream-json");
 
         if let Some(ref model) = options.model {
             cmd.arg("--model").arg(model);
@@ -86,7 +89,6 @@ impl Provider for ClaudeCliProvider {
         // The orchestrator spawns Claude as subprocesses — not true nesting.
         cmd.env_remove("CLAUDECODE");
 
-        // Pipe stdout (capture JSON response), pipe stderr (stream to terminal), null stdin
         cmd.stdout(Stdio::piped());
         cmd.stderr(Stdio::piped());
         cmd.stdin(Stdio::null());
@@ -99,35 +101,27 @@ impl Provider for ClaudeCliProvider {
             }
         })?;
 
-        // Stream stderr to terminal in a background thread
+        let label = options.agent_label.clone().unwrap_or_default();
+
+        // Collect stderr in background (not much comes here with stream-json, but avoid deadlock)
         let stderr_pipe = child.stderr.take();
         let stderr_thread = std::thread::spawn(move || {
             let mut collected = String::new();
             if let Some(pipe) = stderr_pipe {
                 let reader = BufReader::new(pipe);
-                for line in reader.lines() {
-                    match line {
-                        Ok(line) => {
-                            eprintln!("  [agent] {line}");
-                            collected.push_str(&line);
-                            collected.push('\n');
-                        }
-                        Err(_) => break,
-                    }
+                for line in reader.lines().flatten() {
+                    collected.push_str(&line);
+                    collected.push('\n');
                 }
             }
             collected
         });
 
-        // Capture stdout in a background thread (avoids pipe buffer deadlock)
+        // Parse stream-json events from stdout: emit progress, collect result
         let stdout_pipe = child.stdout.take();
-        let stdout_thread = std::thread::spawn(move || {
-            let mut collected = String::new();
-            if let Some(mut pipe) = stdout_pipe {
-                let _ = pipe.read_to_string(&mut collected);
-            }
-            collected
-        });
+        let progress_label = label.clone();
+        let stdout_thread =
+            std::thread::spawn(move || parse_event_stream(stdout_pipe, &progress_label));
 
         // Wait with timeout
         let timeout = Duration::from_secs(options.timeout_seconds);
@@ -136,20 +130,47 @@ impl Provider for ClaudeCliProvider {
         loop {
             match child.try_wait() {
                 Ok(Some(status)) => {
-                    let stdout = stdout_thread.join().unwrap_or_default();
+                    let progress = stdout_thread.join().unwrap_or_default();
                     let stderr = stderr_thread.join().unwrap_or_default();
                     let exit_code = status.code().unwrap_or(-1);
 
+                    // Print summary line
+                    if !label.is_empty() {
+                        let elapsed = start.elapsed().as_secs();
+                        let turns = progress.num_turns.unwrap_or(progress.turn_count);
+                        let cost = progress
+                            .cost_usd
+                            .map(|c| format!(", ${c:.2}"))
+                            .unwrap_or_default();
+                        if progress.is_error {
+                            eprintln!("  [{label}] ✗ failed — {elapsed}s, {turns} turns{cost}");
+                        } else {
+                            eprintln!("  [{label}] ✓ done — {elapsed}s, {turns} turns{cost}");
+                        }
+                    }
+
+                    // Return the result text (not raw NDJSON) so callers parse it directly
+                    let result_text = progress
+                        .result_text
+                        .or(progress.last_assistant_text)
+                        .unwrap_or_default();
+
                     return Ok(ProviderOutput {
-                        stdout,
+                        stdout: result_text,
                         stderr,
                         exit_code,
                     });
                 }
                 Ok(None) => {
                     if start.elapsed() > timeout {
+                        if !label.is_empty() {
+                            eprintln!(
+                                "  [{label}] ✗ timed out after {}s",
+                                options.timeout_seconds
+                            );
+                        }
                         let _ = child.kill();
-                        let _ = child.wait(); // reap the process
+                        let _ = child.wait();
                         return Err(ProviderError::Timeout {
                             seconds: options.timeout_seconds,
                         });
@@ -159,6 +180,113 @@ impl Provider for ClaudeCliProvider {
                 Err(e) => return Err(ProviderError::Io(e)),
             }
         }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Stream-json event parsing
+// ---------------------------------------------------------------------------
+
+#[derive(Default)]
+struct StreamProgress {
+    result_text: Option<String>,
+    cost_usd: Option<f64>,
+    num_turns: Option<u32>,
+    is_error: bool,
+    /// Fallback if the result event is missing (known Claude CLI bug).
+    last_assistant_text: Option<String>,
+    turn_count: u32,
+}
+
+/// Read NDJSON events from the Claude CLI stream-json output.
+/// Emits per-turn progress to stderr and collects the final result.
+fn parse_event_stream(pipe: Option<ChildStdout>, label: &str) -> StreamProgress {
+    let mut progress = StreamProgress::default();
+    let Some(pipe) = pipe else {
+        return progress;
+    };
+
+    let reader = BufReader::new(pipe);
+    for line in reader.lines().flatten() {
+        if line.trim().is_empty() {
+            continue;
+        }
+
+        let Ok(event) = serde_json::from_str::<serde_json::Value>(&line) else {
+            continue;
+        };
+
+        match event["type"].as_str() {
+            Some("assistant") => {
+                progress.turn_count += 1;
+                let mut tools: Vec<String> = Vec::new();
+                let mut text = String::new();
+
+                if let Some(content) = event["message"]["content"].as_array() {
+                    for block in content {
+                        match block["type"].as_str() {
+                            Some("tool_use") => {
+                                let name = block["name"].as_str().unwrap_or("?");
+                                let summary = summarize_tool_input(name, &block["input"]);
+                                if summary.is_empty() {
+                                    tools.push(name.to_string());
+                                } else {
+                                    tools.push(format!("{name} {summary}"));
+                                }
+                            }
+                            Some("text") => {
+                                if let Some(t) = block["text"].as_str() {
+                                    text = t.to_string();
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+
+                if !text.is_empty() {
+                    progress.last_assistant_text = Some(text);
+                }
+
+                // Emit progress for turns that use tools
+                if !tools.is_empty() && !label.is_empty() {
+                    let turn = progress.turn_count;
+                    eprintln!("  [{label}] turn {turn} ▸ {}", tools.join(", "));
+                }
+            }
+            Some("result") => {
+                progress.result_text = event["result"].as_str().map(String::from);
+                progress.cost_usd = event["cost_usd"].as_f64();
+                progress.num_turns = event["num_turns"].as_u64().map(|n| n as u32);
+                progress.is_error = event["is_error"].as_bool().unwrap_or(false);
+            }
+            _ => {} // system, user events — skip
+        }
+    }
+
+    progress
+}
+
+/// Extract a short summary of a tool's input for progress display.
+fn summarize_tool_input(tool: &str, input: &serde_json::Value) -> String {
+    match tool {
+        "Read" | "Edit" | "Write" => input["file_path"].as_str().unwrap_or("").to_string(),
+        "Bash" => {
+            let cmd = input["command"].as_str().unwrap_or("").trim();
+            if cmd.chars().count() > 60 {
+                let short: String = cmd.chars().take(60).collect();
+                format!("{short}…")
+            } else {
+                cmd.to_string()
+            }
+        }
+        "Grep" => {
+            let pattern = input["pattern"].as_str().unwrap_or("");
+            let path = input["path"].as_str().unwrap_or(".");
+            format!("/{pattern}/ {path}")
+        }
+        "Glob" => input["pattern"].as_str().unwrap_or("").to_string(),
+        _ => String::new(),
     }
 }
 
