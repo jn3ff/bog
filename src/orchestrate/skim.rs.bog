@@ -1,0 +1,177 @@
+#[file(
+  owner = "orchestrate-agent",
+  subsystem = "orchestrate",
+  updated = "2026-02-27",
+  status = yellow
+)]
+
+#[description {
+  TODO
+}]
+
+#[health(
+  staleness = yellow
+)]
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = red,
+  notes = "clippy: 17 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-a218bf6731b68517",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 15): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-3a13b82caa1bc2a5",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 20): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-3a13b82caa1bc2a5",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 20): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-09899f35abd6cb7e",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 35): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-9a675bc60e5be2c3",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 36): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-b227c52becc4638b",
+    from = "code-standards-agent",
+    target = fn(run_skim_lifecycle),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 40): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-05296ce4af801d35",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 153): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-a51b6371952754f2",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 178): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-afd1a4b060c307f0",
+    from = "code-standards-agent",
+    target = fn(collect_pending_requests),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::redundant_closure_for_method_calls (line 193): redundant closure"
+  )]
+  #[request(
+    id = "code-quality-clippy-ced4f6d65dcc0e93",
+    from = "code-standards-agent",
+    target = fn(collect_pending_requests),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::manual_let_else (line 197): this could be rewritten as `let...else`"
+  )]
+  #[request(
+    id = "code-quality-clippy-9ba9bf300fdd60ec",
+    from = "code-standards-agent",
+    target = fn(collect_pending_requests),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::manual_let_else (line 201): this could be rewritten as `let...else`"
+  )]
+  #[request(
+    id = "code-quality-clippy-3cf9910b5c161efb",
+    from = "code-standards-agent",
+    target = fn(collect_pending_requests),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::map_unwrap_or (line 220): called `map(<f>).unwrap_or(<a>)` on an `Option` value"
+  )]
+  #[request(
+    id = "code-quality-clippy-fef4dafe5fc0459a",
+    from = "code-standards-agent",
+    target = fn(collect_pending_requests),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::map_unwrap_or (line 262): called `map(<f>).unwrap_or_else(<g>)` on an `Option` value"
+  )]
+  #[request(
+    id = "code-quality-clippy-cc624d972a8ff50c",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 281): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-cc624d972a8ff50c",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 281): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-3cd0119ea88e89d8",
+    from = "code-standards-agent",
+    target = fn(build_subsystem_task_from_requests),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 296): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-7b0f27aa03f6debc",
+    from = "code-standards-agent",
+    target = fn(build_subsystem_task_from_requests),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 301): `format!(..)` appended to existing `String`"
+  )]
+}]

@@ -1,0 +1,42 @@
+#[file(
+  owner = "orchestrate-agent",
+  subsystem = "orchestrate",
+  updated = "2026-02-27",
+  status = yellow
+)]
+
+#[description {
+  TODO
+}]
+
+#[health(
+  staleness = yellow
+)]
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = yellow,
+  notes = "clippy: 2 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-57b93f3ea6515bea",
+    from = "code-standards-agent",
+    target = fn(check_agent_permissions),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 14): this function could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-749856962ce8edf5",
+    from = "code-standards-agent",
+    target = fn(check_agent_permissions),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::case_sensitive_file_extension_comparisons (line 39): case-sensitive file extension comparison"
+  )]
+}]

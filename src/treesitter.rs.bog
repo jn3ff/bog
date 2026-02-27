@@ -1,0 +1,139 @@
+#[file(
+  owner = "analysis-agent",
+  subsystem = "analysis",
+  updated = "2026-02-24",
+  status = green
+)]
+
+#[description {
+  Tree-sitter bridge for Rust source analysis. Parses .rs files and extracts
+  function/method symbols with names, parameters, and return types. Used by
+  the validator to check that #[fn(name)] annotations reference real functions.
+}]
+
+#[health(
+  test_coverage = green,
+  staleness = green,
+  complexity = green,
+  contract_compliance = green
+)]
+
+#[fn(extract_symbols) {
+  status = green,
+  refs = [validator::validate_functions],
+  contract = {
+    in = [(source, str)],
+    out = "Result<Vec<Symbol>, TreeSitterError>",
+    invariants = ["returns all top-level functions and impl methods"]
+  },
+  description = "Parses Rust source and extracts all function/method symbols"
+}]
+
+#[fn(collect_symbols) {
+  status = green,
+  description = "Recursive tree walker that finds function_item and impl_item nodes"
+}]
+
+#[fn(extract_function) {
+  status = green,
+  description = "Extracts Symbol from a single function_item node"
+}]
+
+#[fn(extract_calls) {
+  status = green,
+  deps = [is_builtin],
+  description = "Walks tree-sitter nodes to find call_expression patterns in function bodies"
+}]
+
+#[fn(is_builtin) {
+  status = green,
+  description = "Returns true for common Rust stdlib identifiers that should not be tracked as deps"
+}]
+
+#[fn(test_extract_functions) {
+  status = green,
+  deps = [extract_symbols],
+  description = "Verifies extraction of top-level functions"
+}]
+
+#[fn(test_extract_methods) {
+  status = green,
+  deps = [extract_symbols],
+  description = "Verifies extraction of impl methods"
+}]
+
+#[fn(test_extract_calls) {
+  status = green,
+  deps = [extract_symbols],
+  description = "Verifies call inference from function bodies"
+}]
+
+#[fn(test_skips_self_and_builtins) {
+  status = green,
+  deps = [extract_symbols],
+  description = "Verifies Self:: and stdlib calls are filtered out"
+}]
+
+
+
+
+#[skim(tracing) {
+  status = red,
+  notes = "No tracing instrumentation. extract_symbols needs DEBUG with symbol count. collect_symbols and extract_function need TRACE. extract_calls needs TRACE with call site details."
+}]
+
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = yellow,
+  notes = "clippy: 5 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-c28d821d3594c0b5",
+    from = "code-standards-agent",
+    target = fn(extract_symbols),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 31): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-b77fd2a543e2f621",
+    from = "code-standards-agent",
+    target = fn(collect_symbols),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 60): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-a40e25633b557578",
+    from = "code-standards-agent",
+    target = fn(extract_function),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::map_unwrap_or (line 87): called `map(<f>).unwrap_or_else(<g>)` on an `Option` value"
+  )]
+  #[request(
+    id = "code-quality-clippy-843ce57a285f6f79",
+    from = "code-standards-agent",
+    target = fn(extract_function),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::map_unwrap_or (line 91): called `map(<f>).unwrap_or_else(<g>)` on an `Option` value"
+  )]
+  #[request(
+    id = "code-quality-clippy-be73716941ce6d0e",
+    from = "code-standards-agent",
+    target = fn(extract_calls),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 124): this `if` statement can be collapsed"
+  )]
+}]

@@ -8,65 +8,67 @@ Bog is a Rust-based agent-first codebase annotation system. It uses `.bog` sidec
 
 ## Build & Development Commands
 
-This is a Cargo workspace with two crates: `bog` (core library + CLI) and `bog-orchestrate` (multi-agent orchestration).
+Single Rust crate: `bog` (core library + CLI + orchestration).
 
 ```bash
-cargo build --workspace              # Build everything
-cargo test --workspace               # Run all tests (65 total)
-cargo test -p bog --lib              # Run bog unit tests only (25)
-cargo test -p bog --test integration # Run bog integration tests only (14)
-cargo test -p bog-orchestrate        # Run orchestrate tests only (26)
-cargo clippy --workspace             # Lint
-cargo run -p bog -- validate .       # Validate .bog files against source
-cargo run -p bog -- status .         # Subsystem health report
-cargo run -p bog -- check .          # Ownership consistency check
-cargo run -p bog -- skim .           # Skimsystem overview
-cargo run -p bog -- skim . --name code-quality --action clippy  # Run specific integration
-cargo run -p bog -- stub .           # Generate annotation stubs
-cargo run -p bog -- stub . --list    # List existing stubs
-cargo run -p bog-orchestrate -- run "request"                   # Full orchestration
-cargo run -p bog-orchestrate -- run "request" --plan-only       # Dry-run (dock plan only)
-cargo run -p bog-orchestrate -- skim code-quality               # Skim lifecycle orchestration
+cargo build                          # Build
+cargo test                           # Run all tests (75 total)
+cargo test --lib                     # Run unit tests only (55)
+cargo test --test integration        # Run integration tests only (20)
+cargo clippy                         # Lint
+cargo run -- validate .              # Validate .bog files against source
+cargo run -- status .                # Subsystem health report
+cargo run -- check .                 # Ownership consistency check
+cargo run -- skim .                  # Skimsystem overview
+cargo run -- skim . --name code-quality --action clippy  # Run specific integration
+cargo run -- stub .                  # Generate annotation stubs
+cargo run -- stub . --list           # List existing stubs
+cargo run -- orchestrate run "request"              # Full orchestration
+cargo run -- orchestrate run "request" --plan-only  # Dry-run (dock plan only)
+cargo run -- orchestrate skim code-quality          # Skim lifecycle orchestration
 ```
 
 Run a single test: `cargo test <test_name>` (e.g., `cargo test parse_repo_annotation`)
 
-## Workspace Structure
+## Project Structure
 
 ```
 bog/
-├── Cargo.toml          # Workspace root
+├── Cargo.toml          # Crate manifest
 ├── bog.toml            # Agent registry, tree-sitter config, health dimensions
 ├── repo.bog            # Repo-level declarations: subsystems, skimsystems, policies
-├── crates/
-│   ├── bog/            # Core library + CLI binary
-│   │   ├── src/        # ast, parser, config, validator, health, integration, stub, treesitter, cli
-│   │   └── tests/      # Integration tests + fixtures
-│   └── bog-orchestrate/ # Multi-agent orchestration binary
-│       └── src/        # orchestrator, dock, skim, agent, provider, prompt, context, permissions, worktree, plan, error
+├── src/                # Library + binary source
+│   ├── ast.rs, parser.rs, config.rs, lib.rs    # Core subsystem
+│   ├── validator.rs, treesitter.rs, health.rs, stub.rs, integration.rs  # Analysis subsystem
+│   ├── cli.rs, main.rs, context.rs             # CLI subsystem
+│   └── orchestrate/    # Multi-agent orchestration module
+│       ├── mod.rs, orchestrator.rs, dock.rs, agent.rs, skim.rs
+│       ├── context.rs, plan.rs, permissions.rs, prompt.rs
+│       └── provider.rs, worktree.rs, error.rs
+└── tests/              # Integration tests + fixtures
 ```
 
 ## Architecture
 
-### Core Crate (`crates/bog/`)
+### Subsystems
 
 Three subsystems + test-fixtures declared in `repo.bog`:
 
-- **Core** (`core-agent`): Data model, parser, config — `crates/bog/src/{ast,parser,config,lib}.rs`
-- **Analysis** (`analysis-agent`): Validation, tree-sitter bridge, health, stubs, integrations — `crates/bog/src/{validator,treesitter,health,stub,integration}.rs`
-- **CLI** (`cli-agent`): Command handlers and entry point — `crates/bog/src/{cli,main}.rs`
-- **Test Fixtures** (`analysis-agent`): `crates/bog/tests/fixtures/src/auth.rs`, `crates/bog/tests/integration.rs`
+- **Core** (`core-agent`): Data model, parser, config — `src/{ast,parser,config,lib}.rs`
+- **Analysis** (`analysis-agent`): Validation, tree-sitter bridge, health, stubs, integrations — `src/{validator,treesitter,health,stub,integration}.rs`
+- **CLI** (`cli-agent`): Command handlers and entry point — `src/{cli,main,context}.rs`
+- **Test Fixtures** (`analysis-agent`): `tests/fixtures/src/auth.rs`, `tests/integration.rs`
 
 Three **skimsystems** (cross-cutting quality observers):
 - `annotation-quality` (`bog-health-agent`): .bog completeness and hygiene
 - `code-quality` (`code-standards-agent`): Pedantic clippy, generates change_requests for subsystem owners
 - `tracing` (`observability-agent`): Tracing instrumentation coverage (status: red)
 
-CLI commands: `init`, `validate`, `status`, `check`, `skim`, `stub`
+CLI commands: `init`, `validate`, `status`, `check`, `skim`, `stub`, `context`, `orchestrate`
 
-### Orchestration Crate (`crates/bog-orchestrate/`)
+### Orchestration Module (`src/orchestrate/`)
 
-Multi-agent orchestration layer that spawns Claude CLI subprocesses with file-boundary enforcement. Two subcommands: `run` (free-form dock→delegate→merge) and `skim` (integration-driven lifecycle).
+Multi-agent orchestration layer that spawns Claude CLI subprocesses with file-boundary enforcement. Accessed via `bog orchestrate run` and `bog orchestrate skim`.
 
 - **`orchestrator.rs`** — Main `run` loop: dock → plan → delegate → validate → merge/reject with replan. Supports `AllOrNothing` and `Incremental` merge strategies.
 - **`dock.rs`** — Dock agent: invokes Claude CLI read-only to produce a `DockPlan` (JSON with tasks assigned to agents). Handles replan with violation feedback.
@@ -113,6 +115,6 @@ Values can be strings, identifiers, booleans, statuses (`green`/`yellow`/`red`),
 ## Testing
 
 - **Unit tests** live in each module file behind `#[cfg(test)]`
-- **Integration tests** in `crates/bog/tests/integration.rs` use `workspace_root()` helper to resolve paths from `CARGO_MANIFEST_DIR`
-- Test fixtures live in `crates/bog/tests/fixtures/src/`
-- Orchestrate tests use `load_ctx()` / `workspace_root()` helpers that navigate from `CARGO_MANIFEST_DIR` up to the workspace root
+- **Integration tests** in `tests/integration.rs` use `workspace_root()` helper resolving from `CARGO_MANIFEST_DIR`
+- Test fixtures live in `tests/fixtures/src/`
+- Orchestrate tests use `load_ctx()` / `workspace_root()` helpers resolving from `CARGO_MANIFEST_DIR`

@@ -1,0 +1,51 @@
+#[file(
+  owner = "orchestrate-agent",
+  subsystem = "orchestrate",
+  updated = "2026-02-27",
+  status = yellow
+)]
+
+#[description {
+  TODO
+}]
+
+#[health(
+  staleness = yellow
+)]
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = yellow,
+  notes = "clippy: 3 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-b8bb10b2c79dc5c7",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 41): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-5185e510ab9bceae",
+    from = "code-standards-agent",
+    target = fn(budget_to_turns),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::cast_possible_truncation (line 108): casting `f64` to `u32` may truncate the value"
+  )]
+  #[request(
+    id = "code-quality-clippy-9c6c291faadf80fe",
+    from = "code-standards-agent",
+    target = fn(budget_to_turns),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::cast_sign_loss (line 108): casting `f64` to `u32` may lose the sign of the value"
+  )]
+}]

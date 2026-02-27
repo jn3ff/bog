@@ -1,0 +1,96 @@
+#[file(
+  owner = "orchestrate-agent",
+  subsystem = "orchestrate",
+  updated = "2026-02-27",
+  status = yellow
+)]
+
+#[description {
+  TODO
+}]
+
+#[health(
+  staleness = yellow
+)]
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = red,
+  notes = "clippy: 8 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-1f7da96b650e3952",
+    from = "code-standards-agent",
+    target = fn(load),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 27): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-cb5d87012f224d30",
+    from = "code-standards-agent",
+    target = fn(agent_file_globs),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 79): this method could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-ce29a8a023927af3",
+    from = "code-standards-agent",
+    target = fn(agent_role),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 95): this method could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-273650df379be6ba",
+    from = "code-standards-agent",
+    target = fn(format_agent_registry),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 100): this method could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-564de10511936e89",
+    from = "code-standards-agent",
+    target = fn(format_agent_registry),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::map_unwrap_or (line 102): called `map(<f>).unwrap_or(<a>)` on an `Option` value"
+  )]
+  #[request(
+    id = "code-quality-clippy-6046c4f149b576b4",
+    from = "code-standards-agent",
+    target = fn(format_agent_registry),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::redundant_closure_for_method_calls (line 103): redundant closure"
+  )]
+  #[request(
+    id = "code-quality-clippy-27651cf8fbb5384d",
+    from = "code-standards-agent",
+    target = fn(format_subsystem_summary),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 112): this method could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-cc1d7352a12d5128",
+    from = "code-standards-agent",
+    target = fn(format_skimsystem_summary),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 125): this method could have a `#[must_use]` attribute"
+  )]
+}]

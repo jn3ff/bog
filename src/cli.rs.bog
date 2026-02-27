@@ -1,0 +1,211 @@
+#[file(
+  owner = "cli-agent",
+  subsystem = "cli",
+  updated = "2026-02-24",
+  status = green
+)]
+
+#[description {
+  CLI command definitions and dispatch. Implements init, validate, status,
+  check, stub, skim, and context commands. Thin layer: delegates to validator,
+  health, stub, and context modules.
+}]
+
+#[health(
+  test_coverage = yellow,
+  staleness = green,
+  complexity = green,
+  contract_compliance = green
+)]
+
+#[fn(run) {
+  status = green,
+  deps = [cmd_init, cmd_validate, cmd_status, cmd_check],
+  contract = {
+    in = [(cli, Cli)],
+    out = "Result<(), Box<dyn Error>>"
+  },
+  description = "Dispatches CLI command to handler"
+}]
+
+#[fn(cmd_init) {
+  status = green,
+  description = "Scaffolds bog.toml, repo.bog, and example sidecar"
+}]
+
+#[fn(cmd_validate) {
+  status = green,
+  deps = [validator::validate_project],
+  description = "Runs full project validation and prints results"
+}]
+
+#[fn(cmd_status) {
+  status = green,
+  deps = [health::compute_health, health::format_health_report],
+  description = "Computes and prints health report"
+}]
+
+#[fn(cmd_check) {
+  status = green,
+  deps = [validator::validate_project],
+  description = "Runs ownership consistency checks"
+}]
+
+#[fn(cmd_skim) {
+  status = green,
+  deps = [health::compute_health, parser::parse_bog],
+  description = "Shows skimsystem health, principles, and observations"
+}]
+
+#[fn(cmd_stub) {
+  status = green,
+  deps = [stub::find_missing_annotations, stub::apply_stubs],
+  description = "Generates stubs for unannotated functions and writes them to .bog files"
+}]
+
+#[fn(cmd_stub_list) {
+  status = green,
+  deps = [stub::list_stubs],
+  description = "Lists all stub annotations across the project"
+}]
+
+#[skim(tracing) {
+  status = red,
+  notes = "No tracing instrumentation. CLI commands need INFO logs at step boundaries (validate started, status computed, etc.), WARN on non-fatal issues, ERROR before panics. Each fn needs at least one TRACE."
+}]
+
+#[skim(annotation-quality) {
+  status = yellow,
+  notes = "test_coverage is yellow; CLI commands have no unit tests"
+}]
+
+
+
+
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = red,
+  notes = "clippy: 13 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-3becdd9debb75e71",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 77): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-09f4a5435df8629c",
+    from = "code-standards-agent",
+    target = fn(run),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 158): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-cc9060693ada9996",
+    from = "code-standards-agent",
+    target = fn(cmd_validate),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::unnecessary_wraps (line 345): this function's return value is unnecessary"
+  )]
+  #[request(
+    id = "code-quality-clippy-83764386ea7fa378",
+    from = "code-standards-agent",
+    target = fn(cmd_status),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::unnecessary_wraps (line 375): this function's return value is unnecessary"
+  )]
+  #[request(
+    id = "code-quality-clippy-ad2d7203a7d4bc74",
+    from = "code-standards-agent",
+    target = fn(cmd_check),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::unnecessary_wraps (line 393): this function's return value is unnecessary"
+  )]
+  #[request(
+    id = "code-quality-clippy-3de1b71bca1fe4a6",
+    from = "code-standards-agent",
+    target = fn(cmd_skim),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::unnecessary_wraps (line 431): this function's return value is unnecessary"
+  )]
+  #[request(
+    id = "code-quality-clippy-2490f57a9aab1f3e",
+    from = "code-standards-agent",
+    target = fn(cmd_skim),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::map_unwrap_or (line 550): called `map(<f>).unwrap_or(false)` on an `Option` value"
+  )]
+  #[request(
+    id = "code-quality-clippy-46fac9fa77f0e91b",
+    from = "code-standards-agent",
+    target = fn(cmd_skim),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 554): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-239e2e39d036e9a2",
+    from = "code-standards-agent",
+    target = fn(cmd_skim),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 557): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-c90f4eb9c04b3684",
+    from = "code-standards-agent",
+    target = fn(cmd_skim_run),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 608): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-18604d9777d47378",
+    from = "code-standards-agent",
+    target = fn(cmd_skim_run),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::single_match_else (line 623): you seem to be trying to use `match` for destructuring a single pattern. Consider using `if let`"
+  )]
+  #[request(
+    id = "code-quality-clippy-ab574ad88e8bb549",
+    from = "code-standards-agent",
+    target = fn(cmd_stub),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::unnecessary_wraps (line 694): this function's return value is unnecessary"
+  )]
+  #[request(
+    id = "code-quality-clippy-2e22c4b847e6e88e",
+    from = "code-standards-agent",
+    target = fn(cmd_stub_list),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::unnecessary_wraps (line 761): this function's return value is unnecessary"
+  )]
+}]

@@ -1,0 +1,410 @@
+#[file(
+  owner = "core-agent",
+  subsystem = "core",
+  updated = "2026-02-24",
+  status = green
+)]
+
+#[description {
+  Pest-based parser for .bog files. Transforms PEG parse tree into AST types.
+  The grammar lives in parser.pest. This module maps pest Pairs to ast::Annotation
+  variants, handling all annotation types: repo, file, description, health, fn,
+  subsystem, policies, and change_requests.
+}]
+
+#[health(
+  test_coverage = green,
+  staleness = green,
+  complexity = yellow,
+  contract_compliance = green
+)]
+
+#[fn(parse_bog) {
+  status = green,
+  contract = {
+    in = [(input, str)],
+    out = "Result<BogFile, ParseError>",
+    invariants = ["returns all annotations in source order"]
+  },
+  description = "Public entry point: parse .bog text into a BogFile AST"
+}]
+
+#[fn(parse_annotation) {
+  status = green,
+  deps = [parse_repo, parse_file, parse_description, parse_health, parse_fn, parse_subsystem, parse_policies, parse_change_requests],
+  description = "Dispatches a single annotation to its type-specific parser"
+}]
+
+#[fn(extract_kv_map) {
+  status = green,
+  description = "Collects key-value pairs from a pest Pairs iterator into a HashMap"
+}]
+
+#[fn(get_kv_list_from_parens) {
+  status = green,
+  description = "Extracts kv_list from a parens rule"
+}]
+
+#[fn(get_ident_from_parens) {
+  status = green,
+  description = "Extracts a single identifier from a parens rule"
+}]
+
+#[fn(get_body_kv_map) {
+  status = green,
+  description = "Extracts kv_list from a body rule"
+}]
+
+#[fn(get_body_text) {
+  status = green,
+  description = "Extracts raw text from a body rule, used for description blocks"
+}]
+
+#[fn(require_string) {
+  status = green,
+  description = "Extracts a required string field from a kv map, errors if missing"
+}]
+
+#[fn(require_status) {
+  status = green,
+  description = "Extracts a required status field from a kv map, errors if missing"
+}]
+
+#[fn(opt_string) {
+  status = green,
+  description = "Extracts an optional string field from a kv map"
+}]
+
+#[fn(extract_string_list) {
+  status = green,
+  description = "Extracts a list of strings from a kv map value"
+}]
+
+#[fn(unquote) {
+  status = green,
+  description = "Strips surrounding quotes and unescapes a string literal"
+}]
+
+#[fn(parse_value) {
+  status = green,
+  description = "Converts a pest value Pair into an ast::Value"
+}]
+
+#[fn(parse_list_item_value) {
+  status = green,
+  description = "Converts a pest list_item Pair into an ast::Value"
+}]
+
+#[fn(parse_repo) {
+  status = green,
+  description = "Parses #[repo(...)] into RepoAnnotation"
+}]
+
+#[fn(parse_file) {
+  status = green,
+  description = "Parses #[file(...)] into FileAnnotation"
+}]
+
+#[fn(parse_description) {
+  status = green,
+  description = "Parses #[description { ... }] into Description text"
+}]
+
+#[fn(parse_health) {
+  status = green,
+  description = "Parses #[health(...)] into HealthAnnotation"
+}]
+
+#[fn(parse_fn) {
+  status = green,
+  description = "Parses #[fn(name) { ... }] into FnAnnotation with optional contract"
+}]
+
+#[fn(parse_subsystem) {
+  status = green,
+  description = "Parses #[subsystem(name) { ... }] into SubsystemDecl"
+}]
+
+#[fn(parse_policies) {
+  status = green,
+  description = "Parses #[policies { ... }] into PoliciesAnnotation"
+}]
+
+#[fn(parse_change_requests) {
+  status = green,
+  description = "Parses #[change_requests { ... }] containing nested #[request(...)] entries"
+}]
+
+#[fn(test_parse_file_annotation) {
+  status = green,
+  deps = [parse_bog],
+  description = "Verifies parsing of #[file(...)] annotations into FileAnnotation"
+}]
+
+#[fn(test_parse_description) {
+  status = green,
+  deps = [parse_bog],
+  description = "Verifies parsing of #[description { ... }] blocks into text"
+}]
+
+#[fn(test_parse_health) {
+  status = green,
+  deps = [parse_bog],
+  description = "Verifies parsing of #[health(...)] annotations with status dimensions"
+}]
+
+#[fn(test_parse_fn_annotation) {
+  status = green,
+  deps = [parse_bog],
+  description = "Verifies parsing of #[fn(name) { ... }] annotations with deps and contracts"
+}]
+
+#[fn(test_parse_repo) {
+  status = green,
+  deps = [parse_bog],
+  description = "Verifies parsing of #[repo(...)] annotations into RepoAnnotation"
+}]
+
+#[fn(test_parse_subsystem) {
+  status = green,
+  deps = [parse_bog],
+  description = "Verifies parsing of #[subsystem(name) { ... }] declarations"
+}]
+
+#[fn(test_parse_policies) {
+  status = green,
+  deps = [parse_bog],
+  description = "Verifies parsing of #[policies { ... }] annotations"
+}]
+
+#[fn(test_parse_change_requests) {
+  status = green,
+  deps = [parse_bog],
+  description = "Verifies parsing of #[change_requests { ... }] with nested #[request(...)] entries"
+}]
+
+#[fn(test_parse_with_comments) {
+  status = green,
+  deps = [parse_bog],
+  description = "Verifies that comments are correctly ignored during parsing"
+}]
+
+#[fn(test_parse_repo_bog) {
+  status = green,
+  deps = [parse_bog],
+  description = "Verifies parsing of a complete repo.bog file with subsystems and policies"
+}]
+
+#[fn(test_parse_full_file_bog) {
+  status = green,
+  deps = [parse_bog],
+  description = "Verifies parsing of a complete file-level .bog sidecar with all annotation types"
+}]
+
+
+
+
+#[skim(tracing) {
+  status = red,
+  notes = "No tracing instrumentation. parse_bog needs DEBUG with input length and annotation count. parse_annotation needs TRACE per annotation dispatched. Helper fns need TRACE."
+}]
+
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = red,
+  notes = "clippy: 21 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-d6e0a8f34846c459",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::wildcard_imports (line 7): usage of wildcard import"
+  )]
+  #[request(
+    id = "code-quality-clippy-7ef584fc18abf745",
+    from = "code-standards-agent",
+    target = fn(parse_bog),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_panics_doc (line 28): docs for function which may panic missing `# Panics` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-5cb13b9422a9b4a4",
+    from = "code-standards-agent",
+    target = fn(parse_bog),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 28): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-66a49ebd0d36af80",
+    from = "code-standards-agent",
+    target = fn(get_kv_list_from_parens),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 79): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-561c8519c5b279b2",
+    from = "code-standards-agent",
+    target = fn(get_ident_from_parens),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 94): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-0156a2de0c17959e",
+    from = "code-standards-agent",
+    target = fn(get_body_kv_map),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 109): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-3108813197557451",
+    from = "code-standards-agent",
+    target = fn(get_body_kv_map),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 110): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-78163f06151e663c",
+    from = "code-standards-agent",
+    target = fn(get_body_kv_map),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 111): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-d2700081270a0a43",
+    from = "code-standards-agent",
+    target = fn(get_body_text),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 126): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-ae9507793fd84ba3",
+    from = "code-standards-agent",
+    target = fn(get_body_text),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 127): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-ef4f7dc28f248130",
+    from = "code-standards-agent",
+    target = fn(parse_value),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::match_same_arms (line 259): these match arms have identical bodies"
+  )]
+  #[request(
+    id = "code-quality-clippy-89e256a1f3f317a3",
+    from = "code-standards-agent",
+    target = fn(parse_value),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::redundant_closure_for_method_calls (line 226): redundant closure"
+  )]
+  #[request(
+    id = "code-quality-clippy-db1ad22d5398fdc8",
+    from = "code-standards-agent",
+    target = fn(parse_value),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::match_same_arms (line 248): these match arms have identical bodies"
+  )]
+  #[request(
+    id = "code-quality-clippy-84a3a57ff11285db",
+    from = "code-standards-agent",
+    target = fn(parse_list_item_value),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::match_same_arms (line 306): these match arms have identical bodies"
+  )]
+  #[request(
+    id = "code-quality-clippy-e15f157569384d9d",
+    from = "code-standards-agent",
+    target = fn(parse_list_item_value),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::redundant_closure_for_method_calls (line 288): redundant closure"
+  )]
+  #[request(
+    id = "code-quality-clippy-cea6d5b97ba41179",
+    from = "code-standards-agent",
+    target = fn(parse_list_item_value),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::match_same_arms (line 300): these match arms have identical bodies"
+  )]
+  #[request(
+    id = "code-quality-clippy-a8ff57e58c849b4c",
+    from = "code-standards-agent",
+    target = fn(parse_description),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::unnecessary_wraps (line 331): this function's return value is unnecessarily wrapped by `Result`"
+  )]
+  #[request(
+    id = "code-quality-clippy-18043d5dd171eb7e",
+    from = "code-standards-agent",
+    target = fn(parse_fn),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 361): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-c48349e28fab6e58",
+    from = "code-standards-agent",
+    target = fn(parse_change_requests),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 540): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-f7e460912ea777e6",
+    from = "code-standards-agent",
+    target = fn(parse_change_requests),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 541): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-925d2b5950a075cb",
+    from = "code-standards-agent",
+    target = fn(parse_change_requests),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 542): this `if` statement can be collapsed"
+  )]
+}]

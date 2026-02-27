@@ -1,0 +1,51 @@
+#[file(
+  owner = "orchestrate-agent",
+  subsystem = "orchestrate",
+  updated = "2026-02-27",
+  status = yellow
+)]
+
+#[description {
+  TODO
+}]
+
+#[health(
+  staleness = yellow
+)]
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = yellow,
+  notes = "clippy: 3 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-c0dc98cf59159f7b",
+    from = "code-standards-agent",
+    target = fn(validate_plan),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 48): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-1254ede11be55bbd",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 80): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-db8d34bdafc23ca2",
+    from = "code-standards-agent",
+    target = fn(topological_sort),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 82): docs for function returning `Result` missing `# Errors` section"
+  )]
+}]

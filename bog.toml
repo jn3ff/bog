@@ -1,15 +1,6 @@
 [bog]
 version = "0.1.0"
 
-[agents]
-core-agent = { role = "subsystem", description = "Owns parsing, AST, and config" }
-analysis-agent = { role = "subsystem", description = "Owns tree-sitter bridge, validation, and health reporting" }
-cli-agent = { role = "subsystem", description = "Owns CLI interface and entry point" }
-orchestrate-agent = { role = "subsystem", description = "Owns multi-agent orchestration: dock, agent execution, worktrees, permissions" }
-code-standards-agent = { role = "skimsystem", description = "Cross-cutting code quality observer (clippy)" }
-bog-health-agent = { role = "skimsystem", description = "Cross-cutting annotation completeness and .bog hygiene observer" }
-observability-agent = { role = "skimsystem", description = "Cross-cutting observability observer (tracing instrumentation)" }
-
 [tree_sitter]
 language = "rust"
 

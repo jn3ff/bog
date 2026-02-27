@@ -1,0 +1,114 @@
+#[file(
+  owner = "analysis-agent",
+  subsystem = "analysis",
+  updated = "2026-02-24",
+  status = yellow
+)]
+
+#[description {
+  TODO
+}]
+
+#[health(
+  staleness = yellow
+)]
+
+
+
+
+#[skim(tracing) {
+  status = red,
+  notes = "No tracing instrumentation. run_integration needs INFO at start/completion with tool name, WARN on tool failures, ERROR on catastrophic tool errors. write_integration_results needs DEBUG."
+}]
+
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = red,
+  notes = "clippy: 9 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-e3a7b621f3914a64",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::wildcard_imports (line 9): usage of wildcard import"
+  )]
+  #[request(
+    id = "code-quality-clippy-ef082836715908bb",
+    from = "code-standards-agent",
+    target = fn(run_integration),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 81): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-54763a185402c142",
+    from = "code-standards-agent",
+    target = fn(find_enclosing_function),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::manual_let_else (line 212): this could be rewritten as `let...else`"
+  )]
+  #[request(
+    id = "code-quality-clippy-9ad3da49493737a1",
+    from = "code-standards-agent",
+    target = fn(find_enclosing_function),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::manual_let_else (line 216): this could be rewritten as `let...else`"
+  )]
+  #[request(
+    id = "code-quality-clippy-3ecf3855a28e7fd4",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 238): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-a74efc6fe9af3770",
+    from = "code-standards-agent",
+    target = fn(write_integration_results),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 239): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-47baf685825712cf",
+    from = "code-standards-agent",
+    target = fn(write_integration_results),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 287): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-9f2d051c7633f36d",
+    from = "code-standards-agent",
+    target = fn(write_integration_results),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 297): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-41e88ad49ef7d189",
+    from = "code-standards-agent",
+    target = fn(write_integration_results),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 314): `format!(..)` appended to existing `String`"
+  )]
+}]

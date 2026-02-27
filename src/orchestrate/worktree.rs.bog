@@ -1,0 +1,123 @@
+#[file(
+  owner = "orchestrate-agent",
+  subsystem = "orchestrate",
+  updated = "2026-02-27",
+  status = yellow
+)]
+
+#[description {
+  TODO
+}]
+
+#[health(
+  staleness = yellow
+)]
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = red,
+  notes = "clippy: 11 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-3c48b4853109de81",
+    from = "code-standards-agent",
+    target = fn(new),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 38): this method could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-df646cd023b883cd",
+    from = "code-standards-agent",
+    target = fn(create_worktree),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_panics_doc (line 63): docs for function which may panic missing `# Panics` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-31d453b57dae0ced",
+    from = "code-standards-agent",
+    target = fn(create_worktree),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 63): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-97cefa235b68d647",
+    from = "code-standards-agent",
+    target = fn(inspect_diff),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 115): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-db6e8613cfa512fe",
+    from = "code-standards-agent",
+    target = fn(auto_commit),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 164): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-b90d20b41bfc8e17",
+    from = "code-standards-agent",
+    target = fn(merge_changes),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 211): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-25d387ab35edd634",
+    from = "code-standards-agent",
+    target = fn(find_worktree),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 238): this method could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-7a429dfeb6de38aa",
+    from = "code-standards-agent",
+    target = fn(remove_worktree),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_panics_doc (line 245): docs for function which may panic missing `# Panics` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-933d6a1ac126a96b",
+    from = "code-standards-agent",
+    target = fn(remove_worktree),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 245): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-2272d70c816d102c",
+    from = "code-standards-agent",
+    target = fn(cleanup_run),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 277): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-da2439dac0e8264a",
+    from = "code-standards-agent",
+    target = fn(parse_name_status),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::match_same_arms (line 323): these match arms have identical bodies"
+  )]
+}]

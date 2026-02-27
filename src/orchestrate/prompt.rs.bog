@@ -1,0 +1,96 @@
+#[file(
+  owner = "orchestrate-agent",
+  subsystem = "orchestrate",
+  updated = "2026-02-27",
+  status = yellow
+)]
+
+#[description {
+  TODO
+}]
+
+#[health(
+  staleness = yellow
+)]
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = red,
+  notes = "clippy: 8 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-6b860672a26c22e5",
+    from = "code-standards-agent",
+    target = fn(build_dock_replan_prompt),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::needless_raw_string_hashes (line 73): unnecessary hashes around raw string literal"
+  )]
+  #[request(
+    id = "code-quality-clippy-c34d4a022adafff9",
+    from = "code-standards-agent",
+    target = fn(build_subsystem_agent_prompt),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::needless_raw_string_hashes (line 97): unnecessary hashes around raw string literal"
+  )]
+  #[request(
+    id = "code-quality-clippy-37886daac67dd178",
+    from = "code-standards-agent",
+    target = fn(build_dock_system_prompt),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 5): this function could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-0dc184379d523326",
+    from = "code-standards-agent",
+    target = fn(build_dock_replan_prompt),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 58): this function could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-949c5b3c430914c9",
+    from = "code-standards-agent",
+    target = fn(build_dock_replan_prompt),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 66): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-5081c9fe462d231f",
+    from = "code-standards-agent",
+    target = fn(build_dock_replan_prompt),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 68): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-69e9ec56707060db",
+    from = "code-standards-agent",
+    target = fn(build_subsystem_agent_prompt),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 84): this function could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-75ef4e0c83f13e93",
+    from = "code-standards-agent",
+    target = fn(build_skimsystem_agent_prompt),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 143): this function could have a `#[must_use]` attribute"
+  )]
+}]

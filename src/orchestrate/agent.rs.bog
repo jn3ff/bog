@@ -1,0 +1,33 @@
+#[file(
+  owner = "orchestrate-agent",
+  subsystem = "orchestrate",
+  updated = "2026-02-27",
+  status = yellow
+)]
+
+#[description {
+  TODO
+}]
+
+#[health(
+  staleness = yellow
+)]
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = yellow,
+  notes = "clippy: 1 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-a55e6923d50f247c",
+    from = "code-standards-agent",
+    target = fn(execute_agent_task),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 12): docs for function returning `Result` missing `# Errors` section"
+  )]
+}]

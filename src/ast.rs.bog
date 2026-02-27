@@ -1,0 +1,68 @@
+#[file(
+  owner = "core-agent",
+  subsystem = "core",
+  updated = "2026-02-24",
+  status = green
+)]
+
+#[description {
+  AST types for .bog files. Pure data definitions, no parsing logic.
+  All annotation types map to structs here: BogFile, Annotation variants,
+  FileAnnotation, FnAnnotation, Contract, SubsystemDecl, ChangeRequest, etc.
+  Status enum (green/yellow/red) is the universal health signal.
+  Value enum covers all .bog value types including nested blocks.
+}]
+
+#[health(
+  test_coverage = green,
+  staleness = green,
+  complexity = green,
+  contract_compliance = green
+)]
+
+#[skim(tracing) {
+  status = green,
+  notes = "Pure data types; no logic to instrument"
+}]
+
+#[skim(annotation-quality) {
+  status = green,
+  notes = "Pure data types; no function annotations needed beyond types"
+}]
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = yellow,
+  notes = "clippy: 3 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-a5e2cb6865b46ba9",
+    from = "code-standards-agent",
+    target = fn(derive_agents),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 247): this function could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-94f088cb7166acf8",
+    from = "code-standards-agent",
+    target = fn(derive_agents),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 259): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-ffebbe3a4bf35223",
+    from = "code-standards-agent",
+    target = fn(derive_agents),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 267): `format!(..)` appended to existing `String`"
+  )]
+}]

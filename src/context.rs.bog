@@ -1,0 +1,371 @@
+#[file(
+  owner = "cli-agent",
+  subsystem = "cli",
+  updated = "2026-02-26",
+  status = green
+)]
+
+#[description {
+  Static context retrieval for bog agents. Loads .bog annotation data scoped to
+  an agent or subsystem and formats it as structured text or JSON. Provides
+  load_context for programmatic access and format_context_text for terminal display.
+}]
+
+#[health(
+  test_coverage = green,
+  staleness = green,
+  complexity = green,
+  contract_compliance = green
+)]
+
+#[skim(tracing) {
+  status = red,
+  notes = "No tracing instrumentation. load_context needs INFO at start/completion with scope and file count. discover_bog_files needs DEBUG with count. format_context_text needs TRACE."
+}]
+
+#[fn(load_context) {
+  status = green,
+  deps = [config::load_config, parser::parse_bog],
+  contract = {
+    in = [(root, Path), (scope, ContextScope), (filter, SectionFilter), (kind_filter, "Option<&str>"), (tag_filter, "Option<&str>")],
+    out = "Result<ContextOutput, ContextError>"
+  },
+  description = "Loads .bog annotation context scoped to an agent, subsystem, or all. Parses repo.bog and bog.toml, resolves scope to file list, extracts annotations into output types."
+}]
+
+#[fn(resolve_scope) {
+  status = green,
+  description = "Resolves a ContextScope enum to a ScopeInfo and list of target SubsystemDecls"
+}]
+
+#[fn(extract_file_context) {
+  status = green,
+  deps = [parser::parse_bog],
+  description = "Extracts annotations from a parsed BogFile into a FileContext output struct, applying section and pickled filters"
+}]
+
+#[fn(format_target) {
+  status = green,
+  description = "Converts an ast::Value to a display string for change_request targets"
+}]
+
+#[fn(format_skim_target) {
+  status = green,
+  description = "Converts a SkimTarget enum to a display string"
+}]
+
+#[fn(format_context_text) {
+  status = green,
+  description = "Formats a ContextOutput as colored, sectioned terminal text grouped by subsystem"
+}]
+
+#[fn(format_status_dot) {
+  status = green,
+  description = "Returns a colored dot string for a status value"
+}]
+
+#[fn(format_health_section) {
+  status = green,
+  description = "Formats the health dimensions section of a file context"
+}]
+
+#[fn(format_pickled_section) {
+  status = green,
+  description = "Formats the pickled entries section of a file context"
+}]
+
+#[fn(format_requests_section) {
+  status = green,
+  description = "Formats the change_requests section of a file context"
+}]
+
+#[fn(format_contracts_section) {
+  status = green,
+  description = "Formats the function contracts section of a file context"
+}]
+
+#[fn(format_skims_section) {
+  status = green,
+  description = "Formats the skim observations section of a file context"
+}]
+
+#[fn(discover_bog_files) {
+  status = green,
+  description = "Discovers all .bog sidecar files under root, skipping target/, .git/, and repo.bog"
+}]
+
+#[fn(decl_to_info) {
+  status = green,
+  description = "Converts a SubsystemDecl to a SubsystemInfo output struct"
+}]
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = red,
+  notes = "clippy: 29 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-e03b8aadfeda594d",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::struct_excessive_bools (line 34): more than 3 bools in a struct"
+  )]
+  #[request(
+    id = "code-quality-clippy-58e8d32115f2e3c9",
+    from = "code-standards-agent",
+    target = fn(all),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 43): this method could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-9bfc2e3f05ee43dc",
+    from = "code-standards-agent",
+    target = fn(load_context),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 161): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-85690705667df209",
+    from = "code-standards-agent",
+    target = fn(load_context),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::needless_pass_by_value (line 163): this argument is passed by value, but not consumed in the function body"
+  )]
+  #[request(
+    id = "code-quality-clippy-3aaaeb349f8de30e",
+    from = "code-standards-agent",
+    target = fn(load_context),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::needless_pass_by_value (line 164): this argument is passed by value, but not consumed in the function body"
+  )]
+  #[request(
+    id = "code-quality-clippy-e33127cbdea064e5",
+    from = "code-standards-agent",
+    target = fn(load_context),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::manual_let_else (line 203): this could be rewritten as `let...else`"
+  )]
+  #[request(
+    id = "code-quality-clippy-23734504091013ec",
+    from = "code-standards-agent",
+    target = fn(load_context),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::manual_let_else (line 207): this could be rewritten as `let...else`"
+  )]
+  #[request(
+    id = "code-quality-clippy-42ab6be1fe9dcd9a",
+    from = "code-standards-agent",
+    target = fn(extract_file_context),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::redundant_closure_for_method_calls (line 343): redundant closure"
+  )]
+  #[request(
+    id = "code-quality-clippy-becb629b4d7a23e8",
+    from = "code-standards-agent",
+    target = fn(format_context_text),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 428): this function could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-63deed611a2d2ea8",
+    from = "code-standards-agent",
+    target = fn(format_context_text),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 447): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-fb96d66d2b0c8e07",
+    from = "code-standards-agent",
+    target = fn(format_context_text),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 460): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-e5acd1beadcaf634",
+    from = "code-standards-agent",
+    target = fn(format_health_section),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 483): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-70b939e96c7171e1",
+    from = "code-standards-agent",
+    target = fn(format_pickled_section),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 491): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-5bb3e7fec1b096ce",
+    from = "code-standards-agent",
+    target = fn(format_pickled_section),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 507): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-4e15a4e956b8a126",
+    from = "code-standards-agent",
+    target = fn(format_pickled_section),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 516): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-e0bf48d6310fed8e",
+    from = "code-standards-agent",
+    target = fn(format_requests_section),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 529): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-82ed728ed5127b27",
+    from = "code-standards-agent",
+    target = fn(format_requests_section),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 540): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-cc001cb6e4738e2b",
+    from = "code-standards-agent",
+    target = fn(format_requests_section),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 544): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-4079f2935a63480d",
+    from = "code-standards-agent",
+    target = fn(format_contracts_section),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 552): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-1a39126a462a3be7",
+    from = "code-standards-agent",
+    target = fn(format_contracts_section),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 559): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-9f09203e6d91ea97",
+    from = "code-standards-agent",
+    target = fn(format_contracts_section),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 567): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-7f9b2678d5d9bf3a",
+    from = "code-standards-agent",
+    target = fn(format_contracts_section),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 569): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-a059e0e9c7cf78c0",
+    from = "code-standards-agent",
+    target = fn(format_contracts_section),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 573): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-11c9d3088189b9ee",
+    from = "code-standards-agent",
+    target = fn(format_contracts_section),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 577): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-49b2899e534f9667",
+    from = "code-standards-agent",
+    target = fn(format_skims_section),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 586): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-9dba629fc353ceac",
+    from = "code-standards-agent",
+    target = fn(format_skims_section),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 598): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-3f60d93ffc1e3669",
+    from = "code-standards-agent",
+    target = fn(format_skims_section),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::format_push_string (line 600): `format!(..)` appended to existing `String`"
+  )]
+  #[request(
+    id = "code-quality-clippy-a887d6223f75a405",
+    from = "code-standards-agent",
+    target = fn(discover_bog_files),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 607): this function could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-268c6f35cf917c23",
+    from = "code-standards-agent",
+    target = fn(discover_bog_files),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::map_unwrap_or (line 619): called `map(<f>).unwrap_or(false)` on an `Option` value"
+  )]
+}]

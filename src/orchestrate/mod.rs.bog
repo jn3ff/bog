@@ -1,0 +1,18 @@
+#[file(
+  owner = "orchestrate-agent",
+  subsystem = "orchestrate",
+  updated = "2026-02-26",
+  status = yellow
+)]
+
+#[description {
+  Multi-agent orchestration module. Re-exports submodules for dock planning,
+  agent execution in worktrees, permission enforcement, and skim lifecycle.
+}]
+
+#[health(
+  test_coverage = green,
+  staleness = green,
+  complexity = green,
+  contract_compliance = green
+)]

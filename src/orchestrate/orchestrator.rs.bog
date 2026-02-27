@@ -1,0 +1,60 @@
+#[file(
+  owner = "orchestrate-agent",
+  subsystem = "orchestrate",
+  updated = "2026-02-27",
+  status = yellow
+)]
+
+#[description {
+  TODO
+}]
+
+#[health(
+  staleness = yellow
+)]
+
+
+// [integration:code-quality:clippy]
+#[skim(code-quality) {
+  status = yellow,
+  notes = "clippy: 4 warning(s)"
+}]
+
+#[change_requests {
+  #[request(
+    id = "code-quality-clippy-616be86d41b63bc0",
+    from = "code-standards-agent",
+    target = fn(orchestrate),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::missing_errors_doc (line 42): docs for function returning `Result` missing `# Errors` section"
+  )]
+  #[request(
+    id = "code-quality-clippy-57777de417623d82",
+    from = "code-standards-agent",
+    target = fn(orchestrate),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::too_many_lines (line 42): this function has too many lines (101/100)"
+  )]
+  #[request(
+    id = "code-quality-clippy-3acf805fa0a458bf",
+    from = "code-standards-agent",
+    target = fn(orchestrate),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 98): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-d9210f63ed6293b1",
+    from = "code-standards-agent",
+    target = fn(orchestrate),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 131): this `if` statement can be collapsed"
+  )]
+}]
