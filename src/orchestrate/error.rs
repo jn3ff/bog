@@ -35,10 +35,10 @@ pub enum OrchestrateError {
 
 #[derive(Debug, thiserror::Error)]
 pub enum ProviderError {
-    #[error("Claude CLI not found on PATH")]
+    #[error("Provider CLI not found on PATH (ensure claude or codex is installed)")]
     CliNotFound,
 
-    #[error("Claude CLI exited with code {code}: {stderr}")]
+    #[error("Provider CLI exited with code {code}: {stderr}")]
     CliExitError { code: i32, stderr: String },
 
     #[error("Failed to parse provider output: {0}")]

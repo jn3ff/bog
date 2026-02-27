@@ -84,10 +84,15 @@
 
 
 
+
+
+
+
+
 // [integration:code-quality:clippy]
 #[skim(code-quality) {
   status = red,
-  notes = "clippy: 20 warning(s)"
+  notes = "clippy: 21 warning(s)"
 }]
 
 #[change_requests {
@@ -180,6 +185,15 @@
     status = pending,
     created = "2026-02-27",
     description = "clippy::redundant_closure_for_method_calls (line 104): redundant closure"
+  )]
+  #[request(
+    id = "code-quality-clippy-292561c38f66e836",
+    from = "code-standards-agent",
+    target = fn(generate_stub),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::implicit_clone (line 104): implicitly cloning a `String` by calling `to_string` on its dereferenced type"
   )]
   #[request(
     id = "code-quality-clippy-b4891c39c0469ddb",

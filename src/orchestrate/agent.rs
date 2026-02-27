@@ -28,6 +28,9 @@ pub fn execute_agent_task(
         AgentRole::Skimsystem => prompt::build_skimsystem_agent_prompt(ctx, &task.agent, task),
     };
 
+    // Resolve model: task-level override > subsystem/skimsystem declaration > None
+    let model = task.model.clone().or_else(|| ctx.agent_model(&task.agent));
+
     let options = ProviderOptions {
         read_only: false,
         allowed_tools: Some(vec![
@@ -40,6 +43,7 @@ pub fn execute_agent_task(
         ]),
         timeout_seconds: 900,
         agent_label: Some(task.agent.clone()),
+        model,
         ..Default::default()
     };
 

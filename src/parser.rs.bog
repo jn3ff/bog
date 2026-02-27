@@ -215,6 +215,11 @@
 
 
 
+
+
+
+
+
 // [integration:code-quality:clippy]
 #[skim(code-quality) {
   status = red,
@@ -385,24 +390,6 @@
     description = "clippy::collapsible_if (line 361): this `if` statement can be collapsed"
   )]
   #[request(
-    id = "code-quality-clippy-c48349e28fab6e58",
-    from = "code-standards-agent",
-    target = fn(parse_change_requests),
-    type = lint_warning,
-    status = pending,
-    created = "2026-02-27",
-    description = "clippy::collapsible_if (line 540): this `if` statement can be collapsed"
-  )]
-  #[request(
-    id = "code-quality-clippy-f7e460912ea777e6",
-    from = "code-standards-agent",
-    target = fn(parse_change_requests),
-    type = lint_warning,
-    status = pending,
-    created = "2026-02-27",
-    description = "clippy::collapsible_if (line 541): this `if` statement can be collapsed"
-  )]
-  #[request(
     id = "code-quality-clippy-925d2b5950a075cb",
     from = "code-standards-agent",
     target = fn(parse_change_requests),
@@ -410,5 +397,23 @@
     status = pending,
     created = "2026-02-27",
     description = "clippy::collapsible_if (line 542): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-c7af7e74cdbd4f14",
+    from = "code-standards-agent",
+    target = fn(parse_change_requests),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 543): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-83039cf56b4c2de6",
+    from = "code-standards-agent",
+    target = fn(parse_change_requests),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 544): this `if` statement can be collapsed"
   )]
 }]

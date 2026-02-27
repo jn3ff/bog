@@ -230,7 +230,7 @@ pub fn run(cli: Cli) -> Result<(), Box<dyn std::error::Error>> {
                 ctx.skimsystems.len(),
                 ctx.derived_agents.roles.len(),
             );
-            let provider = orchestrate::provider::ClaudeCliProvider;
+            let provider = orchestrate::provider::ProviderRegistry::new();
             match command {
                 OrchestrateCommand::Skim { name, action } => {
                     cmd_orchestrate_skim(&ctx, &name, action.as_deref(), &provider)

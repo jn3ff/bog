@@ -60,7 +60,9 @@ pub fn build_dock_system_prompt(ctx: &RepoContext) -> String {
          \"agent\": \"string — agent name from repo.bog\",\n      \
          \"instruction\": \"string — specific instruction for this agent\",\n      \
          \"focus_files\": [\"string — file paths to focus on\"],\n      \
-         \"depends_on\": [0]\n    }\n  ]\n}"
+         \"depends_on\": [0],\n      \
+         \"model\": \"string (optional) — model override, e.g. claude-sonnet-4-6 or o4-mini\"\n    \
+         }\n  ]\n}"
             .to_string(),
     );
 
@@ -778,6 +780,7 @@ mod tests {
             instruction: "Fix parser bug".to_string(),
             focus_files: vec!["src/parser.rs".to_string()],
             depends_on: vec![],
+            model: None,
         };
         let prompt = build_subsystem_agent_prompt(&ctx, "core-agent", &task);
         assert!(prompt.contains("ast.rs"));
@@ -794,6 +797,7 @@ mod tests {
             instruction: "Review annotation quality".to_string(),
             focus_files: vec![],
             depends_on: vec![],
+            model: None,
         };
         let prompt = build_skimsystem_agent_prompt(&ctx, "code-standards-agent", &task);
         assert!(prompt.contains("ONLY modify *.bog"));
@@ -825,6 +829,7 @@ mod tests {
             instruction: "test".to_string(),
             focus_files: vec![],
             depends_on: vec![],
+            model: None,
         };
         let prompt = build_subsystem_agent_prompt(&ctx, "core-agent", &task);
         // Subsystem description from repo.bog
@@ -842,6 +847,7 @@ mod tests {
             instruction: "test".to_string(),
             focus_files: vec![],
             depends_on: vec![],
+            model: None,
         };
         let prompt = build_subsystem_agent_prompt(&ctx, "core-agent", &task);
         // File description from src/parser.rs.bog
@@ -864,6 +870,7 @@ mod tests {
             instruction: "test".to_string(),
             focus_files: vec![],
             depends_on: vec![],
+            model: None,
         };
         let prompt = build_skimsystem_agent_prompt(&ctx, "code-standards-agent", &task);
         assert!(
@@ -880,6 +887,7 @@ mod tests {
             instruction: "test".to_string(),
             focus_files: vec![],
             depends_on: vec![],
+            model: None,
         };
         let prompt = build_skimsystem_agent_prompt(&ctx, "code-standards-agent", &task);
         // Should have non-green skim observations

@@ -24,6 +24,10 @@ pub struct AgentTask {
     /// Indices into the `tasks` array that must complete first.
     #[serde(default)]
     pub depends_on: Vec<usize>,
+    /// Optional model override (e.g. "o4-mini", "claude-sonnet-4-6").
+    /// When set, the orchestrator routes to the appropriate provider.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub model: Option<String>,
 }
 
 /// Result of executing a single agent task.
@@ -130,6 +134,7 @@ mod tests {
             instruction: "do something".to_string(),
             focus_files: vec![],
             depends_on: deps,
+            model: None,
         }
     }
 
@@ -188,5 +193,24 @@ mod tests {
             task("cli-agent", vec![0]),
         ]);
         validate_plan(&plan, &ctx).unwrap();
+    }
+
+    #[test]
+    fn test_agent_task_serde_without_model() {
+        let json = r#"{"agent":"core-agent","instruction":"do it"}"#;
+        let task: AgentTask = serde_json::from_str(json).unwrap();
+        assert_eq!(task.agent, "core-agent");
+        assert_eq!(task.model, None);
+    }
+
+    #[test]
+    fn test_agent_task_serde_with_model() {
+        let json = r#"{"agent":"core-agent","instruction":"do it","model":"o4-mini"}"#;
+        let task: AgentTask = serde_json::from_str(json).unwrap();
+        assert_eq!(task.model, Some("o4-mini".to_string()));
+
+        // Round-trip: model should be serialized
+        let serialized = serde_json::to_string(&task).unwrap();
+        assert!(serialized.contains("o4-mini"));
     }
 }

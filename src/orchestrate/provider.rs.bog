@@ -18,10 +18,15 @@
 
 
 
+
+
+
+
+
 // [integration:code-quality:clippy]
 #[skim(code-quality) {
   status = red,
-  notes = "clippy: 8 warning(s)"
+  notes = "clippy: 22 warning(s)"
 }]
 
 #[change_requests {
@@ -62,39 +67,165 @@
     description = "clippy::lines_filter_map_ok (line 113): `flatten()` will run forever if the iterator repeatedly produces an `Err`"
   )]
   #[request(
-    id = "code-quality-clippy-eb5e8a640e1569b3",
+    id = "code-quality-clippy-1fa9262375668ec6",
     from = "code-standards-agent",
     target = fn(parse_event_stream),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::lines_filter_map_ok (line 217): `flatten()` will run forever if the iterator repeatedly produces an `Err`"
+    description = "clippy::lines_filter_map_ok (line 219): `flatten()` will run forever if the iterator repeatedly produces an `Err`"
   )]
   #[request(
-    id = "code-quality-clippy-64ea4a304b5def80",
+    id = "code-quality-clippy-2a1d9ec8e439e4bd",
     from = "code-standards-agent",
     target = fn(parse_event_stream),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::cast_possible_truncation (line 267): casting `u64` to `u32` may truncate the value"
+    description = "clippy::cast_possible_truncation (line 269): casting `u64` to `u32` may truncate the value"
   )]
   #[request(
-    id = "code-quality-clippy-76422c92ec4c2b1e",
+    id = "code-quality-clippy-e6056dbe6ce7e146",
     from = "code-standards-agent",
     target = fn(budget_to_turns),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::cast_possible_truncation (line 303): casting `f64` to `u32` may truncate the value"
+    description = "clippy::cast_possible_truncation (line 343): casting `f64` to `u32` may truncate the value"
   )]
   #[request(
-    id = "code-quality-clippy-b12a4cf8958caf01",
+    id = "code-quality-clippy-a83c9fd8d88b7347",
     from = "code-standards-agent",
     target = fn(budget_to_turns),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::cast_sign_loss (line 303): casting `f64` to `u32` may lose the sign of the value"
+    description = "clippy::cast_sign_loss (line 343): casting `f64` to `u32` may lose the sign of the value"
+  )]
+  #[request(
+    id = "code-quality-clippy-4c73e99186414237",
+    from = "code-standards-agent",
+    target = fn(is_codex_model),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 352): this function could have a `#[must_use]` attribute"
+  )]
+  #[request(
+    id = "code-quality-clippy-4b58c2a0884ee5c4",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 363): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-04db8e656a0fe5cc",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 497): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-4f991475d92b70c7",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 499): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-4f991475d92b70c7",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 499): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-4f991475d92b70c7",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 499): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-8c874084608d439b",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 501): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-8c874084608d439b",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 501): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-73827bd3cebfc052",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 503): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-73827bd3cebfc052",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 503): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-73827bd3cebfc052",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 503): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-73827bd3cebfc052",
+    from = "code-standards-agent",
+    target = file,
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::doc_markdown (line 503): item in documentation is missing backticks"
+  )]
+  #[request(
+    id = "code-quality-clippy-9d318a0e380cedfa",
+    from = "code-standards-agent",
+    target = fn(parse_codex_event_stream),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::collapsible_if (line 564): this `if` statement can be collapsed"
+  )]
+  #[request(
+    id = "code-quality-clippy-7d5f71bbc509e8de",
+    from = "code-standards-agent",
+    target = fn(new),
+    type = lint_warning,
+    status = pending,
+    created = "2026-02-27",
+    description = "clippy::must_use_candidate (line 600): this method could have a `#[must_use]` attribute"
   )]
 }]

@@ -86,10 +86,15 @@
 
 
 
+
+
+
+
+
 // [integration:code-quality:clippy]
 #[skim(code-quality) {
   status = red,
-  notes = "clippy: 24 warning(s)"
+  notes = "clippy: 23 warning(s)"
 }]
 
 #[change_requests {
@@ -191,15 +196,6 @@
     status = pending,
     created = "2026-02-27",
     description = "clippy::redundant_closure_for_method_calls (line 167): redundant closure"
-  )]
-  #[request(
-    id = "code-quality-clippy-9c312df40a974e6a",
-    from = "code-standards-agent",
-    target = fn(compute_health),
-    type = lint_warning,
-    status = pending,
-    created = "2026-02-27",
-    description = "clippy::inefficient_to_string (line 173): calling `to_string` on `&&str`"
   )]
   #[request(
     id = "code-quality-clippy-22433ea4e8af69bd",

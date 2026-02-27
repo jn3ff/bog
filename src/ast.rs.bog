@@ -35,6 +35,11 @@
 
 
 
+
+
+
+
+
 // [integration:code-quality:clippy]
 #[skim(code-quality) {
   status = yellow,
@@ -43,30 +48,30 @@
 
 #[change_requests {
   #[request(
-    id = "code-quality-clippy-a5e2cb6865b46ba9",
+    id = "code-quality-clippy-7944b42008faa947",
     from = "code-standards-agent",
     target = fn(derive_agents),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::must_use_candidate (line 247): this function could have a `#[must_use]` attribute"
+    description = "clippy::must_use_candidate (line 249): this function could have a `#[must_use]` attribute"
   )]
   #[request(
-    id = "code-quality-clippy-94f088cb7166acf8",
+    id = "code-quality-clippy-4d26675a338fad31",
     from = "code-standards-agent",
     target = fn(derive_agents),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::format_push_string (line 259): `format!(..)` appended to existing `String`"
+    description = "clippy::format_push_string (line 261): `format!(..)` appended to existing `String`"
   )]
   #[request(
-    id = "code-quality-clippy-ffebbe3a4bf35223",
+    id = "code-quality-clippy-b4a44e133c8ff652",
     from = "code-standards-agent",
     target = fn(derive_agents),
     type = lint_warning,
     status = pending,
     created = "2026-02-27",
-    description = "clippy::format_push_string (line 267): `format!(..)` appended to existing `String`"
+    description = "clippy::format_push_string (line 269): `format!(..)` appended to existing `String`"
   )]
 }]

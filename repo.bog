@@ -15,6 +15,7 @@
   owner = "core-agent",
   files = ["src/ast.rs", "src/parser.rs", "src/config.rs", "src/lib.rs"],
   status = green,
+  model = "gpt-5.3-codex",
   description = "Data model, .bog parser (pest), and config loading"
 }]
 
@@ -22,6 +23,7 @@
   owner = "analysis-agent",
   files = ["src/treesitter.rs", "src/validator.rs", "src/health.rs", "src/stub.rs", "src/integration.rs"],
   status = green,
+  model = "gpt-5.3-codex",
   description = "Tree-sitter bridge, validation logic, and health aggregation"
 }]
 
@@ -29,6 +31,7 @@
   owner = "cli-agent",
   files = ["src/cli.rs", "src/main.rs", "src/context.rs"],
   status = green,
+  model = "gpt-5.3-codex",
   description = "CLI commands and entry point"
 }]
 
@@ -49,6 +52,7 @@
     "src/orchestrate/error.rs"
   ],
   status = yellow,
+  model = "gpt-5.3-codex",
   description = "Multi-agent orchestration: dock planning, agent execution in worktrees, permission enforcement, skim lifecycle"
 }]
 
@@ -56,6 +60,7 @@
   owner = "analysis-agent",
   files = ["tests/fixtures/src/auth.rs", "tests/integration.rs"],
   status = green,
+  model = "gpt-5.3-codex",
   description = "Test fixture source files used by integration tests"
 }]
 
@@ -63,6 +68,7 @@
   owner = "bog-health-agent",
   targets = all,
   status = green,
+  model = "claude-opus-4-6",
   principles = [
     "Every .bog file should have a description block",
     "Health dimensions should include at least test_coverage and staleness",
@@ -75,6 +81,7 @@
   owner = "observability-agent",
   targets = all,
   status = red,
+  model = "claude-opus-4-6",
   principles = [
     "TRACE: Low-level actions taken and conditions checked; every function should have at least one trace log",
     "DEBUG: Low-level state/variable logs; first recourse when behavior is unexpected",
@@ -89,6 +96,7 @@
   owner = "code-standards-agent",
   targets = all,
   status = green,
+  model = "claude-opus-4-6",
   integrations = {
     clippy = {
       command = "cargo clippy --message-format=json -- -W clippy::pedantic",

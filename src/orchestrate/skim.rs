@@ -319,6 +319,7 @@ fn build_subsystem_task_from_requests(wp: &SubsystemWorkPacket) -> AgentTask {
         instruction,
         focus_files,
         depends_on: vec![],
+        model: None,
     }
 }
 

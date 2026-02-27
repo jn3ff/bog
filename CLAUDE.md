@@ -16,16 +16,16 @@ cargo test                           # Run all tests (75 total)
 cargo test --lib                     # Run unit tests only (55)
 cargo test --test integration        # Run integration tests only (20)
 cargo clippy                         # Lint
-cargo run -- validate .              # Validate .bog files against source
-cargo run -- status .                # Subsystem health report
-cargo run -- check .                 # Ownership consistency check
-cargo run -- skim .                  # Skimsystem overview
-cargo run -- skim . --name code-quality --action clippy  # Run specific integration
-cargo run -- stub .                  # Generate annotation stubs
-cargo run -- stub . --list           # List existing stubs
-cargo run -- orchestrate run "request"              # Full orchestration
-cargo run -- orchestrate run "request" --plan-only  # Dry-run (dock plan only)
-cargo run -- orchestrate skim code-quality          # Skim lifecycle orchestration
+bog validate .                       # Validate .bog files against source
+bog status .                         # Subsystem health report
+bog check .                          # Ownership consistency check
+bog skim .                           # Skimsystem overview
+bog skim . --name code-quality --action clippy  # Run specific integration
+bog stub .                           # Generate annotation stubs
+bog stub . --list                    # List existing stubs
+bog orchestrate run "request"              # Full orchestration
+bog orchestrate run "request" --plan-only  # Dry-run (dock plan only)
+bog orchestrate skim code-quality          # Skim lifecycle orchestration
 ```
 
 Run a single test: `cargo test <test_name>` (e.g., `cargo test parse_repo_annotation`)

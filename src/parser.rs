@@ -427,6 +427,7 @@ fn parse_subsystem(mut pairs: Pairs<Rule>) -> Result<Annotation, ParseError> {
         files: extract_string_list(&map, "files"),
         status: require_status(&map, "status", "subsystem")?,
         description: opt_string(&map, "description"),
+        model: opt_string(&map, "model"),
     }))
 }
 
@@ -505,6 +506,7 @@ fn parse_skimsystem(mut pairs: Pairs<Rule>) -> Result<Annotation, ParseError> {
         principles: extract_string_list(&map, "principles"),
         integrations,
         description: opt_string(&map, "description"),
+        model: opt_string(&map, "model"),
     }))
 }
 
@@ -1155,5 +1157,64 @@ mod tests {
 "#;
         let bog = parse_bog(input).unwrap();
         assert_eq!(bog.annotations.len(), 4);
+    }
+
+    #[test]
+    fn test_parse_subsystem_with_model() {
+        let input = r#"
+#[subsystem(core) {
+  owner = "core-agent",
+  files = ["src/core.rs"],
+  status = green,
+  model = "o4-mini"
+}]
+"#;
+        let bog = parse_bog(input).unwrap();
+        match &bog.annotations[0] {
+            Annotation::Subsystem(s) => {
+                assert_eq!(s.name, "core");
+                assert_eq!(s.model, Some("o4-mini".to_string()));
+            }
+            other => panic!("expected Subsystem, got {:?}", other),
+        }
+    }
+
+    #[test]
+    fn test_parse_subsystem_without_model() {
+        let input = r#"
+#[subsystem(core) {
+  owner = "core-agent",
+  files = ["src/core.rs"],
+  status = green
+}]
+"#;
+        let bog = parse_bog(input).unwrap();
+        match &bog.annotations[0] {
+            Annotation::Subsystem(s) => {
+                assert_eq!(s.model, None);
+            }
+            other => panic!("expected Subsystem, got {:?}", other),
+        }
+    }
+
+    #[test]
+    fn test_parse_skimsystem_with_model() {
+        let input = r#"
+#[skimsystem(quality) {
+  owner = "quality-agent",
+  targets = all,
+  status = green,
+  principles = ["Be thorough"],
+  model = "gpt-4.1-mini"
+}]
+"#;
+        let bog = parse_bog(input).unwrap();
+        match &bog.annotations[0] {
+            Annotation::Skimsystem(s) => {
+                assert_eq!(s.name, "quality");
+                assert_eq!(s.model, Some("gpt-4.1-mini".to_string()));
+            }
+            other => panic!("expected Skimsystem, got {:?}", other),
+        }
     }
 }

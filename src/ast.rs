@@ -99,6 +99,7 @@ pub struct SubsystemDecl {
     pub files: Vec<String>,
     pub status: Status,
     pub description: Option<String>,
+    pub model: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -110,6 +111,7 @@ pub struct SkimsystemDecl {
     pub principles: Vec<String>,
     pub integrations: Vec<IntegrationSpec>,
     pub description: Option<String>,
+    pub model: Option<String>,
 }
 
 #[derive(Debug, Clone)]

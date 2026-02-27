@@ -102,6 +102,30 @@ impl RepoContext {
         self.derived_agents.roles.get(agent_name).copied()
     }
 
+    /// Resolve the preferred model for an agent from its subsystem/skimsystem declarations.
+    /// Returns the model from the first declaration that has one, or None.
+    pub fn agent_model(&self, agent_name: &str) -> Option<String> {
+        if let Some(sub_names) = self.agent_to_subsystems.get(agent_name) {
+            for name in sub_names {
+                if let Some(sub) = self.subsystems.get(name)
+                    && sub.model.is_some()
+                {
+                    return sub.model.clone();
+                }
+            }
+        }
+        if let Some(skim_names) = self.agent_to_skimsystems.get(agent_name) {
+            for name in skim_names {
+                if let Some(skim) = self.skimsystems.get(name)
+                    && skim.model.is_some()
+                {
+                    return skim.model.clone();
+                }
+            }
+        }
+        None
+    }
+
     /// Format the agent registry for embedding in prompts.
     pub fn format_agent_registry(&self) -> String {
         let mut lines: Vec<String> = self.derived_agents.roles.iter().map(|(name, role)| {
@@ -284,6 +308,32 @@ mod tests {
         assert!(core_paths.contains(&"src/parser.rs"));
         // Should NOT contain cli files
         assert!(!core_paths.contains(&"src/cli.rs"));
+    }
+
+    #[test]
+    fn test_agent_model_resolution() {
+        let root = workspace_root();
+        let ctx = RepoContext::load(&root).unwrap();
+        // Subsystem agents resolve to gpt-5.3-codex (from repo.bog)
+        assert_eq!(
+            ctx.agent_model("core-agent"),
+            Some("gpt-5.3-codex".to_string())
+        );
+        assert_eq!(
+            ctx.agent_model("cli-agent"),
+            Some("gpt-5.3-codex".to_string())
+        );
+        // Skimsystem agents resolve to claude-opus-4-6
+        assert_eq!(
+            ctx.agent_model("code-standards-agent"),
+            Some("claude-opus-4-6".to_string())
+        );
+        assert_eq!(
+            ctx.agent_model("bog-health-agent"),
+            Some("claude-opus-4-6".to_string())
+        );
+        // Nonexistent agent returns None
+        assert_eq!(ctx.agent_model("nonexistent"), None);
     }
 
     #[test]
